@@ -182,6 +182,11 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
     aee_rr_rec_hoplug(cpu, 8, 0);
 
 	/*
+	 * Log the CPU info before it is marked online and might get read.
+	 */
+	cpuinfo_store_cpu();
+
+	/*
 	 * OK, now it's safe to let the boot CPU continue.  Wait for
 	 * the CPU migration code to notice that the CPU is online
 	 * before we continue.
