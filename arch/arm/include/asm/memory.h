@@ -144,7 +144,24 @@
  * PLAT_PHYS_OFFSET and not PHYS_OFFSET.
  */
 #ifndef PLAT_PHYS_OFFSET
+#if defined(CONFIG_ARM_PATCH_PHYS_VIRT) || defined(CONFIG_NEED_MACH_MEMORY_H)
+/*
+ * we can't have CONFIG_PHYS_OFFSET defined in a case where either
+ * CONFIG_ARM_PATCH_PHYS_VIRT or CONFIG_NEED_MACH_MEMORY_H is defined.
+ * In such a case, if PLAT_PHYS_OFFSET is not defined, try to fall back
+ * to PHYS_OFFSET defined with CONFIG_NEED_MACH_MEMORY_H if present.
+ */
+#if defined(CONFIG_NEED_MACH_MEMORY_H) && defined(PHYS_OFFSET)
+#define PLAT_PHYS_OFFSET	UL(PHYS_OFFSET)
+#else
+/* perhaps we should throw an error?
+ * this looks serious guys... no, seriously.
+ * don't have enuf knowledge to properly fix this thou.
+ */
+#endif
+#else
 #define PLAT_PHYS_OFFSET	UL(CONFIG_PHYS_OFFSET)
+#endif
 #endif
 
 #ifndef __ASSEMBLY__
@@ -190,7 +207,9 @@ static inline unsigned long __phys_to_virt(unsigned long x)
 }
 #else
 
+#if !defined(CONFIG_NEED_MACH_MEMORY_H) && !defined(PHYS_OFFSET)
 #define PHYS_OFFSET	PLAT_PHYS_OFFSET
+#endif
 
 #define __virt_to_phys(x)	((x) - PAGE_OFFSET + PHYS_OFFSET)
 #define __phys_to_virt(x)	((x) - PHYS_OFFSET + PAGE_OFFSET)
