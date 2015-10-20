@@ -170,7 +170,7 @@
 #define CPUFREQ_FIX_FREQ_FOR_ES    (CPU_DVFS_FREQ2)
 #else
 #define CPU_DVFS_FREQ0   (1495000) /* KHz */
-#define CPU_DVFS_FREQ1   (1495000) /* KHz */
+#define CPU_DVFS_FREQ1   (1300000) /* KHz */
 #define CPU_DVFS_FREQ2   (1235000) /* KHz */
 #define CPU_DVFS_FREQ3   (1170000) /* KHz */
 #define CPU_DVFS_FREQ3_1   (1144000) /* KHz (for 6753 FY)*/
@@ -647,7 +647,7 @@ static struct mt_cpu_dvfs cpu_dvfs[] = {
 /* CPU LEVEL 0, 1.5GHz segment */
 static struct mt_cpu_freq_info opp_tbl_e1_0[] = {
     OP(CPU_DVFS_FREQ0,  125000),
-    OP(CPU_DVFS_FREQ1,  125000),
+    OP(CPU_DVFS_FREQ1,  121250),
     OP(CPU_DVFS_FREQ3,  118125),
     OP(CPU_DVFS_FREQ4,  115000),
     OP(CPU_DVFS_FREQ5,  108750),
