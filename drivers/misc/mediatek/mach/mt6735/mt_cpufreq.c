@@ -874,113 +874,114 @@ static enum mt_cpu_dvfs_id _get_cpu_dvfs_id(unsigned int cpu_id)
 #ifdef __KERNEL__
 static unsigned int _mt_cpufreq_get_cpu_level(void)
 {
-    unsigned int lv = 0;
-    unsigned int cpu_spd_bond = _GET_BITS_VAL_(2 : 0, get_devinfo_with_index(CPUFREQ_EFUSE_INDEX));
-
-    cpufreq_info("@%s: efuse cpu_spd_bond = 0x%x\n", __func__, cpu_spd_bond);
-
-#ifdef CONFIG_ARCH_MT6753
-	{
-		unsigned int efuse_spare2 = _GET_BITS_VAL_(21 : 20, get_devinfo_with_index(5));
-
-		cpufreq_info("@%s: efuse_spare2 = 0x%x\n", __func__, efuse_spare2);
-
-		/* 6753T check, spare2[21:20] should be 0x3 */
-		if (cpu_spd_bond == 0 && efuse_spare2 == 3)
-			return CPU_LEVEL_0;
-	}
-#endif
-
-    // No efuse,  use clock-frequency from device tree to determine CPU table type!
-    if (cpu_spd_bond == 0) {
-#ifdef CONFIG_OF
-        struct device_node *node = of_find_node_by_type(NULL, "cpu");
-        unsigned int cpu_speed = 0;
-
-        if (!of_property_read_u32(node, "clock-frequency", &cpu_speed))
-            cpu_speed = cpu_speed / 1000 / 1000;    // MHz
-        else {
-            cpufreq_err("@%s: missing clock-frequency property, use default CPU level\n", __func__);
-            return CPU_LEVEL_1;
-        }
-
-        cpufreq_info("CPU clock-frequency from DT = %d MHz\n", cpu_speed);
-
-#ifdef CONFIG_ARCH_MT6753
-        if (cpu_speed >= 1500 && cpu_dvfs_is_extbuck_valid())
-            lv = CPU_LEVEL_0;   // 1.5G
-        else if (cpu_speed >= 1300)
-            lv = CPU_LEVEL_1;   // 1.3G
-        else {
-            cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
-            lv = CPU_LEVEL_1;
-        }
-#elif defined(CONFIG_ARCH_MT6735M)
-        if (cpu_speed >= 1150)
-            lv = CPU_LEVEL_0;   // 1.15G
-        else if (cpu_speed >= 1000)
-            lv = CPU_LEVEL_1;   // 1G
-        else {
-            cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
-            lv = CPU_LEVEL_1;
-        }
-#else   /* CONFIG_ARCH_MT6735 */
-        if (cpu_speed >= 1500)
-            lv = CPU_LEVEL_0;   // 1.5G
-        else if (cpu_speed >= 1300)
-            lv = CPU_LEVEL_1;   // 1.3G
-        else if (cpu_speed >= 1100)
-            lv = CPU_LEVEL_2;   // 1.1G
-        else {
-            cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
-            lv = CPU_LEVEL_1;
-        }
-#endif
-#else   /* CONFIG_OF */
-        cpufreq_err("@%s: Cannot get CPU speed from DT!\n", __func__);
-        lv = CPU_LEVEL_1;
-#endif
-        return lv;
-    }
-
-    /* no DT, we should check efuse for CPU speed HW bounding */
-    switch (cpu_spd_bond) {
-#ifdef CONFIG_ARCH_MT6735M
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-            lv = CPU_LEVEL_0; // 1.15G
-            break;
-        case 6:
-        case 7:
-        default:
-            lv = CPU_LEVEL_1; // 1G
-            break;
-#else   /* !CONFIG_ARCH_MT6735M */
-        case 1:
-        case 2:
-            lv = CPU_LEVEL_0; // 1.5G
-            break;
-        case 3:
-        case 4:
-            lv = CPU_LEVEL_1; // 1.3G
-            break;
-        case 5:
-        case 6:
-        case 7:
-#ifdef CONFIG_ARCH_MT6735
-            lv = CPU_LEVEL_2; // 1.1G
-            break;
-#endif
-        default:
-            lv = CPU_LEVEL_1; // 1.3G
-            break;
-#endif
-    }
-
-    return lv;
+//    unsigned int cpu_spd_bond = _GET_BITS_VAL_(2 : 0, get_devinfo_with_index(CPUFREQ_EFUSE_INDEX));
+//
+//   cpufreq_info("@%s: efuse cpu_spd_bond = 0x%x\n", __func__, cpu_spd_bond);
+//
+//#ifdef CONFIG_ARCH_MT6753
+	//{
+		//unsigned int efuse_spare2 = _GET_BITS_VAL_(21 : 20, get_devinfo_with_index(5));
+//
+		//cpufreq_info("@%s: efuse_spare2 = 0x%x\n", __func__, efuse_spare2);
+//
+		///* 6753T check, spare2[21:20] should be 0x3 */
+		//if (cpu_spd_bond == 0 && efuse_spare2 == 3)
+			//return CPU_LEVEL_0;
+	//}
+//#endif
+//
+    //// No efuse,  use clock-frequency from device tree to determine CPU table type!
+    //if (cpu_spd_bond == 0) {
+//#ifdef CONFIG_OF
+        //struct device_node *node = of_find_node_by_type(NULL, "cpu");
+        //unsigned int cpu_speed = 0;
+//
+        //if (!of_property_read_u32(node, "clock-frequency", &cpu_speed))
+            //cpu_speed = cpu_speed / 1000 / 1000;    // MHz
+        //else {
+            //cpufreq_err("@%s: missing clock-frequency property, use default CPU level\n", __func__);
+            //return CPU_LEVEL_1;
+        //}
+//
+        //cpufreq_info("CPU clock-frequency from DT = %d MHz\n", cpu_speed);
+//
+//#ifdef CONFIG_ARCH_MT6753
+        //if (cpu_speed >= 1500 && cpu_dvfs_is_extbuck_valid())
+            //lv = CPU_LEVEL_0;   // 1.5G
+        //else if (cpu_speed >= 1300)
+            //lv = CPU_LEVEL_1;   // 1.3G
+        //else {
+            //cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
+            //lv = CPU_LEVEL_1;
+        //}
+//#elif defined(CONFIG_ARCH_MT6735M)
+        //if (cpu_speed >= 1150)
+            //lv = CPU_LEVEL_0;   // 1.15G
+        //else if (cpu_speed >= 1000)
+            //lv = CPU_LEVEL_1;   // 1G
+        //else {
+            //cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
+            //lv = CPU_LEVEL_1;
+        //}
+//#else   /* CONFIG_ARCH_MT6735 */
+        //if (cpu_speed >= 1500)
+            //lv = CPU_LEVEL_0;   // 1.5G
+        //else if (cpu_speed >= 1300)
+            //lv = CPU_LEVEL_1;   // 1.3G
+        //else if (cpu_speed >= 1100)
+            //lv = CPU_LEVEL_2;   // 1.1G
+        //else {
+            //cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
+            //lv = CPU_LEVEL_1;
+        //}
+//#endif
+//#else   /* CONFIG_OF */
+        //cpufreq_err("@%s: Cannot get CPU speed from DT!\n", __func__);
+        //lv = CPU_LEVEL_1;
+//#endif
+        //return lv;
+    //}
+//
+    ///* no DT, we should check efuse for CPU speed HW bounding */
+    //switch (cpu_spd_bond) {
+//#ifdef CONFIG_ARCH_MT6735M
+        //case 1:
+        //case 2:
+        //case 3:
+        //case 4:
+        //case 5:
+            //lv = CPU_LEVEL_0; // 1.15G
+            //break;
+        //case 6:
+        //case 7:
+        //default:
+            //lv = CPU_LEVEL_1; // 1G
+            //break;
+//#else   /* !CONFIG_ARCH_MT6735M */
+        //case 1:
+        //case 2:
+            //lv = CPU_LEVEL_0; // 1.5G
+            //break;
+        //case 3:
+        //case 4:
+            //lv = CPU_LEVEL_1; // 1.3G
+            //break;
+        //case 5:
+        //case 6:
+        //case 7:
+//#ifdef CONFIG_ARCH_MT6735
+            //lv = CPU_LEVEL_2; // 1.1G
+            //break;
+//#endif
+        //default:
+            //lv = CPU_LEVEL_1; // 1.3G
+            //break;
+//#endif
+    //}
+//
+    //return lv;
+//better approach to overclocking to 1.5 GHz, thanks to jott_st
+return CPU_LEVEL_0;
 }
 #else
 static unsigned int _mt_cpufreq_get_cpu_level(void)
