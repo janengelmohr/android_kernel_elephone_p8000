@@ -82,6 +82,10 @@
 #endif
 #include <cust_i2c.h>
 #include "tps65132_i2c.h"
+
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
 // ---------------------------------------------------------------------------
 //  Local Constants
 // ---------------------------------------------------------------------------
@@ -341,9 +345,6 @@ static struct LCM_setting_table lcm_initialization_setting[] = {
 
 		{0x00,1,{0xB3}},
 		{0xC0,1,{0xCC}},
-		
-		//	{0x00,1,{0xB3}},
-		//{0xC0,1,{0x7C}},
 		{REGFLAG_DELAY, 10, {}},
 
 		{0x00,1,{0xBC}},
@@ -944,6 +945,11 @@ static void lcm_suspend(void)
 
 	SET_RESET_PIN(0);
 	MDELAY(120); 
+	
+	//needed for pocket mode
+	#ifdef CONFIG_POCKETMOD
+	is_screen_on = 0;
+	#endif 
 #endif   
 
 }
@@ -952,6 +958,10 @@ static void lcm_suspend(void)
 static void lcm_resume(void)
 {
 	lcm_init();
+	// needed for pocket mode
+	#ifdef CONFIG_POCKETMOD
+	is_screen_on = 1;
+	#endif
 
 	//push_table(lcm_sleep_out_setting, sizeof(lcm_sleep_out_setting) / sizeof(struct LCM_setting_table), 1);
 
