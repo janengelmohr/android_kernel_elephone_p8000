@@ -82,6 +82,9 @@
 	#include <mach/mt_gpio.h>
 #endif
 #include <cust_i2c.h>
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
 // ---------------------------------------------------------------------------
 //  Local Constants
 // ---------------------------------------------------------------------------
@@ -854,7 +857,13 @@ static void lcm_suspend(void)
 	MDELAY(100); // 1ms
 	
 	SET_RESET_PIN(1);
-	MDELAY(120);      
+	MDELAY(120);   
+	
+		
+	//needed for pocket mode
+	#ifdef CONFIG_POCKETMOD
+	is_screen_on = 0;
+	#endif    
 
 }
 
@@ -862,7 +871,10 @@ static void lcm_suspend(void)
 static void lcm_resume(void)
 {
 	lcm_init();
-
+	// needed for pocket mode
+	#ifdef CONFIG_POCKETMOD
+	is_screen_on = 1;
+	#endif
 	//push_table(lcm_sleep_out_setting, sizeof(lcm_sleep_out_setting) / sizeof(struct LCM_setting_table), 1);
 
 }
