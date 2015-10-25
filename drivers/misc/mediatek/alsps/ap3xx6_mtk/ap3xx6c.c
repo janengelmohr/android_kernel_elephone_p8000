@@ -79,6 +79,10 @@
 #endif
 #include "ap3xx6c.h"
 
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
+
 
 /*-------------------------------flag---------------------------------------------*/
 #define APS_TAG                  "[ALS/PS] "
@@ -2077,6 +2081,38 @@ static int __init AP3xx6_init(void)
 
 	return 0;
 }
+
+#ifdef CONFIG_POCKETMOD
+int AP3xx6_pocket_detection_check(void)
+{
+	int ps_val;
+	int als_val;
+
+	struct AP3xx6_priv *obj = AP3xx6_obj;
+	
+	if(obj == NULL)
+	{
+		APS_DBG("[AP3xx6] AP3xx6_obj is NULL!");
+		return 0;
+	}
+	else
+	{
+		AP3xx6_enable_ps(obj->client, 1);
+
+		msleep(50);
+
+		ps_val = AP3xx6_get_ps_value(obj, obj->ps);
+		als_val = AP3xx6_get_als_value(obj, obj->ps);
+
+		APS_DBG("[AP3xx6] %s als_val = %d, ps_val = %d\n", __func__, als_val, ps_val);
+
+		AP3xx6_enable_ps(obj->client, 0);
+
+		return (ps_val);
+	}
+}
+#endif
+
 /*----------------------------------------------------------------------------*/
 static void __exit AP3xx6_exit(void)
 {
