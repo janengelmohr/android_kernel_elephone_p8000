@@ -204,8 +204,10 @@ static void dt2w_input_callback(struct work_struct *unused) {
 	}
 	else
 	#endif
+//avoid button presses being recognized as touches
+	if (touch_y < 1920) {
 	detect_doubletap2wake(touch_x, touch_y, true);
-
+	}
 	return;
 }
 
