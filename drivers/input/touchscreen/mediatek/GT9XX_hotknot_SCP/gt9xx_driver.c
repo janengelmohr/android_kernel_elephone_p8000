@@ -10,6 +10,10 @@
 #include <linux/sensors_io.h>
 #endif
 
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
+
 #if GTP_SUPPORT_I2C_DMA
 #include <linux/dma-mapping.h>
 #endif
@@ -3296,9 +3300,21 @@ static int touch_event_handler(void *unused)
 		{
 			input_x =touch_key_point_maping_array[i].point_x;
 			input_y = touch_key_point_maping_array[i].point_y;
-			GTP_DEBUG("button =%d %d",input_x,input_y);
+			#ifdef CONFIG_POCKETMOD
+			// fix for lower button wakeup
+			if(is_screen_on == 1) 
+				{
+				tpd_down( input_x, input_y, 0, 0);
+				}
+				else if(touch_key_point_maping_array[i].point_y<1920) {
+					tpd_down( input_x, input_y, 0, 0);
+				}
+			#else
+				tpd_down( input_x, input_y, 0, 0);
+				GTP_DEBUG("button =%d %d",input_x,input_y);
+			#endif
 				   
-			tpd_down( input_x, input_y, 0, 0);
+
 		}
             }
 			
