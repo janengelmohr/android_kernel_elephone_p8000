@@ -32,7 +32,7 @@
 #include <asm-generic/cputime.h>
 #include <linux/pocket_mod.h>
 
-int is_screen_on;
+int is_screen_on = 1;
 char alsps_dev;
 
 #ifdef CONFIG_POCKETMOD
