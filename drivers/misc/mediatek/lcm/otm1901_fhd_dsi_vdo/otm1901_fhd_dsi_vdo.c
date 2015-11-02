@@ -945,12 +945,13 @@ static void lcm_suspend(void)
 
 	SET_RESET_PIN(0);
 	MDELAY(120); 
-	
-	//needed for pocket mode
-	#ifdef CONFIG_POCKETMOD
-	is_screen_on = 0;
-	#endif 
 #endif   
+
+        //needed for pocket mode
+        #ifdef CONFIG_POCKETMOD
+        is_screen_on = 0;
+        #endif
+
 
 }
 

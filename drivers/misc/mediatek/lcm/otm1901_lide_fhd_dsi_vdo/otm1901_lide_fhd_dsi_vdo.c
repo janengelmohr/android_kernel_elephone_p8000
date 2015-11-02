@@ -71,6 +71,11 @@
 #ifndef BUILD_LK
 #include <linux/string.h>
 #endif
+
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
+
 #include "lcm_drv.h"
 
 #ifdef BUILD_LK
@@ -944,7 +949,12 @@ static void lcm_suspend(void)
 
 	SET_RESET_PIN(0);
 	MDELAY(120); 
-#endif   
+#endif 
+
+	//needed for pocket mode
+	#ifdef CONFIG_POCKETMOD
+	is_screen_on = 0;
+	#endif 
 
 }
 
@@ -952,6 +962,10 @@ static void lcm_suspend(void)
 static void lcm_resume(void)
 {
 	lcm_init();
+
+	#ifdef CONFIG_POCKETMOD
+	is_screen_on = 1;
+	#endif
 
 	//push_table(lcm_sleep_out_setting, sizeof(lcm_sleep_out_setting) / sizeof(struct LCM_setting_table), 1);
 
