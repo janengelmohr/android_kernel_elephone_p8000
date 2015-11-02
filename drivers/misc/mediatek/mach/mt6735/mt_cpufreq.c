@@ -839,10 +839,28 @@ bool is_in_cpufreq = 0;     // used in MCDI
 /* cpu voltage sampler */
 static cpuVoltsampler_func g_pCpuVoltSampler = NULL;
 
+/* for PMIC 5A throttle */
+#ifdef CONFIG_ARCH_MT6753
+static bool pmic_5A_throttle_enable;
+static bool pmic_5A_throttle_on;
+#endif
 
 /*=============================================================*/
 /* Function Implementation                                     */
 /*=============================================================*/
+#ifdef CONFIG_ARCH_MT6753
+static bool is_need_5A_throttle(struct mt_cpu_dvfs *p, unsigned int cur_freq, unsigned int cur_core_num)
+{
+    if (pmic_5A_throttle_enable && pmic_5A_throttle_on
+        && (cur_core_num > PMIC_5A_THRO_MAX_CPU_CORE_NUM)
+        && (cur_freq > PMIC_5A_THRO_MAX_CPU_FREQ)) {
+        return true;
+    }
+
+    return false;
+}
+#endif
+
 static struct mt_cpu_dvfs *id_to_cpu_dvfs(enum mt_cpu_dvfs_id id)
 {
     return (id < NR_MT_CPU_DVFS) ? &cpu_dvfs[id] : NULL;
@@ -856,114 +874,113 @@ static enum mt_cpu_dvfs_id _get_cpu_dvfs_id(unsigned int cpu_id)
 #ifdef __KERNEL__
 static unsigned int _mt_cpufreq_get_cpu_level(void)
 {
-//    unsigned int cpu_spd_bond = _GET_BITS_VAL_(2 : 0, get_devinfo_with_index(CPUFREQ_EFUSE_INDEX));
-//
-//   cpufreq_info("@%s: efuse cpu_spd_bond = 0x%x\n", __func__, cpu_spd_bond);
-//
-//#ifdef CONFIG_ARCH_MT6753
-	//{
-		//unsigned int efuse_spare2 = _GET_BITS_VAL_(21 : 20, get_devinfo_with_index(5));
-//
-		//cpufreq_info("@%s: efuse_spare2 = 0x%x\n", __func__, efuse_spare2);
-//
-		///* 6753T check, spare2[21:20] should be 0x3 */
-		//if (cpu_spd_bond == 0 && efuse_spare2 == 3)
-			//return CPU_LEVEL_0;
-	//}
-//#endif
-//
-    //// No efuse,  use clock-frequency from device tree to determine CPU table type!
-    //if (cpu_spd_bond == 0) {
-//#ifdef CONFIG_OF
-        //struct device_node *node = of_find_node_by_type(NULL, "cpu");
-        //unsigned int cpu_speed = 0;
-//
-        //if (!of_property_read_u32(node, "clock-frequency", &cpu_speed))
-            //cpu_speed = cpu_speed / 1000 / 1000;    // MHz
-        //else {
-            //cpufreq_err("@%s: missing clock-frequency property, use default CPU level\n", __func__);
-            //return CPU_LEVEL_1;
-        //}
-//
-        //cpufreq_info("CPU clock-frequency from DT = %d MHz\n", cpu_speed);
-//
-//#ifdef CONFIG_ARCH_MT6753
-        //if (cpu_speed >= 1500 && cpu_dvfs_is_extbuck_valid())
-            //lv = CPU_LEVEL_0;   // 1.5G
-        //else if (cpu_speed >= 1300)
-            //lv = CPU_LEVEL_1;   // 1.3G
-        //else {
-            //cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
-            //lv = CPU_LEVEL_1;
-        //}
-//#elif defined(CONFIG_ARCH_MT6735M)
-        //if (cpu_speed >= 1150)
-            //lv = CPU_LEVEL_0;   // 1.15G
-        //else if (cpu_speed >= 1000)
-            //lv = CPU_LEVEL_1;   // 1G
-        //else {
-            //cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
-            //lv = CPU_LEVEL_1;
-        //}
-//#else   /* CONFIG_ARCH_MT6735 */
-        //if (cpu_speed >= 1500)
-            //lv = CPU_LEVEL_0;   // 1.5G
-        //else if (cpu_speed >= 1300)
-            //lv = CPU_LEVEL_1;   // 1.3G
-        //else if (cpu_speed >= 1100)
-            //lv = CPU_LEVEL_2;   // 1.1G
-        //else {
-            //cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
-            //lv = CPU_LEVEL_1;
-        //}
-//#endif
-//#else   /* CONFIG_OF */
-        //cpufreq_err("@%s: Cannot get CPU speed from DT!\n", __func__);
-        //lv = CPU_LEVEL_1;
-//#endif
-        //return lv;
-    //}
-//
-    ///* no DT, we should check efuse for CPU speed HW bounding */
-    //switch (cpu_spd_bond) {
-//#ifdef CONFIG_ARCH_MT6735M
-        //case 1:
-        //case 2:
-        //case 3:
-        //case 4:
-        //case 5:
-            //lv = CPU_LEVEL_0; // 1.15G
-            //break;
-        //case 6:
-        //case 7:
-        //default:
-            //lv = CPU_LEVEL_1; // 1G
-            //break;
-//#else   /* !CONFIG_ARCH_MT6735M */
-        //case 1:
-        //case 2:
-            //lv = CPU_LEVEL_0; // 1.5G
-            //break;
-        //case 3:
-        //case 4:
-            //lv = CPU_LEVEL_1; // 1.3G
-            //break;
-        //case 5:
-        //case 6:
-        //case 7:
-//#ifdef CONFIG_ARCH_MT6735
-            //lv = CPU_LEVEL_2; // 1.1G
-            //break;
-//#endif
-        //default:
-            //lv = CPU_LEVEL_1; // 1.3G
-            //break;
-//#endif
-    //}
-//
-    //return lv;
-//better approach to overclocking to 1.5 GHz, thanks to jott_st
-return CPU_LEVEL_0;
+    unsigned int lv = 0;
+    unsigned int cpu_spd_bond = _GET_BITS_VAL_(2 : 0, get_devinfo_with_index(CPUFREQ_EFUSE_INDEX));
+
+    cpufreq_info("@%s: efuse cpu_spd_bond = 0x%x\n", __func__, cpu_spd_bond);
+
+#ifdef CONFIG_ARCH_MT6753
+	{
+		unsigned int efuse_spare2 = _GET_BITS_VAL_(21 : 20, get_devinfo_with_index(5));
+
+		cpufreq_info("@%s: efuse_spare2 = 0x%x\n", __func__, efuse_spare2);
+
+		/* 6753T check, spare2[21:20] should be 0x3 */
+		if (cpu_spd_bond == 0 && efuse_spare2 == 3)
+			return CPU_LEVEL_0;
+	}
+#endif
+
+    // No efuse,  use clock-frequency from device tree to determine CPU table type!
+    if (cpu_spd_bond == 0) {
+#ifdef CONFIG_OF
+        struct device_node *node = of_find_node_by_type(NULL, "cpu");
+        unsigned int cpu_speed = 0;
+
+        if (!of_property_read_u32(node, "clock-frequency", &cpu_speed))
+            cpu_speed = cpu_speed / 1000 / 1000;    // MHz
+        else {
+            cpufreq_err("@%s: missing clock-frequency property, use default CPU level\n", __func__);
+            return CPU_LEVEL_1;
+        }
+
+        cpufreq_info("CPU clock-frequency from DT = %d MHz\n", cpu_speed);
+
+#ifdef CONFIG_ARCH_MT6753
+        if (cpu_speed >= 1500 && cpu_dvfs_is_extbuck_valid())
+            lv = CPU_LEVEL_0;   // 1.5G
+        else if (cpu_speed >= 1300)
+            lv = CPU_LEVEL_1;   // 1.3G
+        else {
+            cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
+            lv = CPU_LEVEL_1;
+        }
+#elif defined(CONFIG_ARCH_MT6735M)
+        if (cpu_speed >= 1150)
+            lv = CPU_LEVEL_0;   // 1.15G
+        else if (cpu_speed >= 1000)
+            lv = CPU_LEVEL_1;   // 1G
+        else {
+            cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
+            lv = CPU_LEVEL_1;
+        }
+#else   /* CONFIG_ARCH_MT6735 */
+        if (cpu_speed >= 1500)
+            lv = CPU_LEVEL_0;   // 1.5G
+        else if (cpu_speed >= 1300)
+            lv = CPU_LEVEL_1;   // 1.3G
+        else if (cpu_speed >= 1100)
+            lv = CPU_LEVEL_2;   // 1.1G
+        else {
+            cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n", cpu_speed);
+            lv = CPU_LEVEL_1;
+        }
+#endif
+#else   /* CONFIG_OF */
+        cpufreq_err("@%s: Cannot get CPU speed from DT!\n", __func__);
+        lv = CPU_LEVEL_1;
+#endif
+        return lv;
+    }
+
+    /* no DT, we should check efuse for CPU speed HW bounding */
+    switch (cpu_spd_bond) {
+#ifdef CONFIG_ARCH_MT6735M
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            lv = CPU_LEVEL_0; // 1.15G
+            break;
+        case 6:
+        case 7:
+        default:
+            lv = CPU_LEVEL_1; // 1G
+            break;
+#else   /* !CONFIG_ARCH_MT6735M */
+        case 1:
+        case 2:
+            lv = CPU_LEVEL_0; // 1.5G
+            break;
+        case 3:
+        case 4:
+            lv = CPU_LEVEL_1; // 1.3G
+            break;
+        case 5:
+        case 6:
+        case 7:
+#ifdef CONFIG_ARCH_MT6735
+            lv = CPU_LEVEL_2; // 1.1G
+            break;
+#endif
+        default:
+            lv = CPU_LEVEL_1; // 1.3G
+            break;
+#endif
+    }
+
+    return lv;
 }
 #else
 static unsigned int _mt_cpufreq_get_cpu_level(void)
@@ -1274,13 +1291,9 @@ static int _mt_cpufreq_set_limit_by_pwr_budget(unsigned int budget)
 	for (ncpu = possible_cpu; ncpu > 0; ncpu--) {
 		for (i = 0; i < p->nr_opp_tbl * possible_cpu; i++) {
 #ifdef CONFIG_ARCH_MT6753
-			if ((p->cpu_level == CPU_LEVEL_1)
-				&& !cpu_dvfs_is_extbuck_valid()
-				&& (p->power_tbl[i].cpufreq_ncpu > PMIC_5A_THRO_MAX_CPU_CORE_NUM)
-				&& (p->power_tbl[i].cpufreq_khz > PMIC_5A_THRO_MAX_CPU_FREQ)
-			) {
+			if (is_need_5A_throttle(p, p->power_tbl[i].cpufreq_khz,
+                                                p->power_tbl[i].cpufreq_ncpu))
 				continue;
-			}
 #endif
 			if (p->power_tbl[i].cpufreq_power <= budget) {
 				p->limited_power_idx = i;
@@ -2486,6 +2499,8 @@ static int _mt_cpufreq_get_idx_by_freq(struct mt_cpu_dvfs *p, unsigned int targe
     return new_opp_idx;
 }
 
+static bool is_limit_modified_by_5A_throttle = false;
+
 static int _mt_cpufreq_power_limited_verify(struct mt_cpu_dvfs *p, int new_opp_idx)
 {
     unsigned int target_khz = cpu_dvfs_get_freq_by_idx(p, new_opp_idx);
@@ -2509,17 +2524,39 @@ static int _mt_cpufreq_power_limited_verify(struct mt_cpu_dvfs *p, int new_opp_i
 #endif
         return new_opp_idx;
 
-    i = p->limited_power_idx;
-
 #ifdef CONFIG_ARCH_MT6753
-	if ((p->cpu_level == CPU_LEVEL_1)
-		&& !cpu_dvfs_is_extbuck_valid()
-		&& (p->limited_max_ncpu > PMIC_5A_THRO_MAX_CPU_CORE_NUM)
-		&& (p->limited_max_freq > PMIC_5A_THRO_MAX_CPU_FREQ)
-	) {
-		cpufreq_err("@%s: Unsafe CPU core / freq limit combination!\n", __func__);
-		cpufreq_err("limited_max_ncpu = %d, limited_max_freq = %d\n", p->limited_max_ncpu, p->limited_max_freq);
-		BUG();
+        if (is_need_5A_throttle(p, p->limited_max_freq, p->limited_max_ncpu)) {
+		cpufreq_dbg("@%s: modify limited max freq and ncpu due to 5A limit enabled!\n", __func__);
+		p->limited_max_freq = PMIC_5A_THRO_MAX_CPU_FREQ;
+		p->limited_max_ncpu = possible_cpu;
+		p->limited_power_idx = 3;
+		is_limit_modified_by_5A_throttle = true;
+	} else if (is_limit_modified_by_5A_throttle) {
+		/* re-calculate limit */
+#ifndef DISABLE_PBM_FEATURE
+		if (p->limited_power_by_pbm && p->limited_power_by_thermal)
+			_mt_cpufreq_set_limit_by_pwr_budget(MIN(p->limited_power_by_pbm, p->limited_power_by_thermal));
+		else if (p->limited_power_by_pbm)
+			_mt_cpufreq_set_limit_by_pwr_budget(p->limited_power_by_pbm);
+		else if (p->limited_power_by_thermal)
+			_mt_cpufreq_set_limit_by_pwr_budget(p->limited_power_by_thermal);
+		else {
+			/* unlimit */
+			p->limited_max_freq = cpu_dvfs_get_max_freq(p);
+			p->limited_max_ncpu = possible_cpu;
+			p->limited_power_idx = 0;
+		}
+#else
+		if (p->limited_power_by_thermal)
+			_mt_cpufreq_set_limit_by_pwr_budget(p->limited_power_by_thermal);
+		else {
+			/* unlimit */
+			p->limited_max_freq = cpu_dvfs_get_max_freq(p);
+			p->limited_max_ncpu = possible_cpu;
+			p->limited_power_idx = 0;
+		}
+#endif
+		is_limit_modified_by_5A_throttle = false;
 	}
 #endif
 
@@ -2633,10 +2670,8 @@ static unsigned int _mt_cpufreq_calc_new_opp_idx(struct mt_cpu_dvfs *p, int new_
     }
 
 #ifdef CONFIG_ARCH_MT6753
-	if (p->cpu_level == CPU_LEVEL_1
-		&& !cpu_dvfs_is_extbuck_valid()
-		&& (num_online_cpus() + num_online_cpus_delta > PMIC_5A_THRO_MAX_CPU_CORE_NUM)
-	) {
+        if (is_need_5A_throttle(p, cpu_dvfs_get_freq_by_idx(p, new_opp_idx),
+                                num_online_cpus() + num_online_cpus_delta)) {
 		idx = _mt_cpufreq_get_idx_by_freq(p, PMIC_5A_THRO_MAX_CPU_FREQ, CPUFREQ_RELATION_H);
 
 		if (idx != -1 && new_opp_idx < idx) {
@@ -3137,6 +3172,25 @@ no_policy:
 }
 EXPORT_SYMBOL(mt_cpufreq_thermal_protect);
 
+void mt_cpufreq_thermal_5A_limit(bool enable)
+{
+    struct mt_cpu_dvfs *p = id_to_cpu_dvfs(MT_CPU_DVFS_LITTLE);
+
+    FUNC_ENTER(FUNC_LV_API);
+
+    cpufreq_info("%s(): PMIC 5A limit = %d\n", __func__, enable);
+
+#ifdef CONFIG_ARCH_MT6753
+    pmic_5A_throttle_on = enable;
+
+    if (cpu_dvfs_is_availiable(p))
+        _mt_cpufreq_set(MT_CPU_DVFS_LITTLE, -1);
+#endif
+
+    FUNC_EXIT(FUNC_LV_API);
+}
+EXPORT_SYMBOL(mt_cpufreq_thermal_5A_limit);
+
 #ifdef CONFIG_CPU_FREQ_GOV_HOTPLUG
 /* for ramp down */
 void mt_cpufreq_set_ramp_down_count_const(enum mt_cpu_dvfs_id id, int count)
@@ -3464,6 +3518,14 @@ static int _mt_cpufreq_init(struct cpufreq_policy *policy)
         BUG_ON(!(lv == CPU_LEVEL_0 || lv == CPU_LEVEL_1 || lv == CPU_LEVEL_2));
 
         p->cpu_level = lv;
+
+#ifdef CONFIG_ARCH_MT6753
+	/* check 5A throttle */
+	if (p->cpu_level == CPU_LEVEL_1 && !cpu_dvfs_is_extbuck_valid()) {
+		pmic_5A_throttle_enable = true;
+		cpufreq_info("@%s: PMIC 5A throttle enabled!\n", __func__);
+	}
+#endif
 
 #ifndef CONFIG_CPU_DVFS_HAS_EXTBUCK
         // make sure Vproc & Vsram in normal mode path
@@ -4380,6 +4442,37 @@ static ssize_t cpufreq_limited_by_thermal_proc_write(struct file *file, const ch
     return count;
 }
 
+/* PMIC 5A limit */
+#ifdef CONFIG_ARCH_MT6753
+static int cpufreq_5A_throttle_enable_proc_show(struct seq_file *m, void *v)
+{
+    seq_printf(m, "cpufreq PMIC 5A throttle enable = %d\n", pmic_5A_throttle_enable);
+    seq_printf(m, "cpufreq PMIC 5A throttle on/off = %d\n", pmic_5A_throttle_on);
+
+    return 0;
+}
+
+static ssize_t cpufreq_5A_throttle_enable_proc_write(struct file *file, const char __user *buffer, size_t count, loff_t *pos)
+{
+    unsigned int enable;
+
+    char *buf = _copy_from_user_for_proc(buffer, count);
+
+    if (!buf)
+        return -EINVAL;
+
+    if (sscanf(buf, "%d", &enable) == 1) {
+        pmic_5A_throttle_enable = enable;
+        _mt_cpufreq_set(MT_CPU_DVFS_LITTLE, -1);
+    }
+    else
+        cpufreq_err("echo 1/0 > /proc/cpufreq/cpufreq_5A_throttle_enable\n");
+
+    free_page((unsigned long)buf);
+    return count;
+}
+#endif
+
 /* cpufreq_limited_max_freq_by_user */
 static int cpufreq_limited_max_freq_by_user_proc_show(struct seq_file *m, void *v)
 {
@@ -4609,11 +4702,7 @@ static ssize_t cpufreq_freq_proc_write(struct file *file, const char __user *buf
 				cur_freq = p->ops->get_cur_phy_freq(p);
 				if (freq != cur_freq) {
 #ifdef CONFIG_ARCH_MT6753
-					if (p->cpu_level == CPU_LEVEL_1
-						&& !cpu_dvfs_is_extbuck_valid()
-						&& (freq > PMIC_5A_THRO_MAX_CPU_FREQ)
-						&& ((num_online_cpus() + num_online_cpus_delta)
-							> PMIC_5A_THRO_MAX_CPU_CORE_NUM)) {
+					if (is_need_5A_throttle(p, freq, num_online_cpus() + num_online_cpus_delta)) {
 						cpufreq_warn("@%s: frequency %dKHz over 5A limit!\n", __func__, freq);
 						p->ops->set_cur_freq(p, cur_freq, PMIC_5A_THRO_MAX_CPU_FREQ);
 					} else
@@ -4776,6 +4865,9 @@ PROC_FOPS_RW(cpufreq_limited_by_hevc);
 PROC_FOPS_RW(cpufreq_limited_by_pbm);
 #endif
 PROC_FOPS_RW(cpufreq_limited_by_thermal);
+#ifdef CONFIG_ARCH_MT6753
+PROC_FOPS_RW(cpufreq_5A_throttle_enable);
+#endif
 PROC_FOPS_RW(cpufreq_limited_max_freq_by_user);
 PROC_FOPS_RO(cpufreq_power_dump);
 PROC_FOPS_RO(cpufreq_ptpod_freq_volt);
@@ -4805,6 +4897,9 @@ static int _mt_cpufreq_create_procfs(void)
         PROC_ENTRY(cpufreq_stress_test),
         PROC_ENTRY(cpufreq_fix_freq_in_es),
         PROC_ENTRY(cpufreq_limited_by_thermal),
+#ifdef CONFIG_ARCH_MT6753
+        PROC_ENTRY(cpufreq_5A_throttle_enable),
+#endif
 #ifndef DISABLE_PBM_FEATURE
         PROC_ENTRY(cpufreq_limited_by_pbm),
 #endif
