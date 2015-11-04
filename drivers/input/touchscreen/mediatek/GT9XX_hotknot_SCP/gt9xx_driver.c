@@ -3357,7 +3357,23 @@ static int touch_event_handler(void *unused)
                 }
             #endif
                 GTP_DEBUG(" %d)(%d, %d)[%d]", id, input_x, input_y, input_w);
-                tpd_down(input_x, input_y, input_w, id);
+			#ifdef CONFIG_POCKETMOD
+                        if(is_screen_on == 1)
+                                {
+                                tpd_down( input_x, input_y, 0, 0);
+                                }
+			else
+			// fix doubletap to wake to be only active in the center of the screen
+				if((input_x>250)&&
+					(input_x<750)&&
+					(input_y<1500)&&
+					(input_y>350)) 
+				{
+                		tpd_down(input_x, input_y, input_w, id);
+				}
+			#else
+			tpd_down(input_x, input_y, input_w, id);
+			#endif
             }
         }
         else if (pre_touch)
