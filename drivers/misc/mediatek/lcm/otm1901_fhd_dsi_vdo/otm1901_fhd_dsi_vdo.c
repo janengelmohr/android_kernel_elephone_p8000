@@ -86,6 +86,12 @@
 #ifdef CONFIG_POCKETMOD
 #include <linux/pocket_mod.h>
 #endif
+
+#ifdef CONFIG_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+
+
 // ---------------------------------------------------------------------------
 //  Local Constants
 // ---------------------------------------------------------------------------
@@ -951,7 +957,6 @@ static void lcm_suspend(void)
         #ifdef CONFIG_POCKETMOD
         is_screen_on = 0;
         #endif
-
 
 }
 

@@ -14,6 +14,10 @@
 #include <linux/pocket_mod.h>
 #endif
 
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+
 #if GTP_SUPPORT_I2C_DMA
 #include <linux/dma-mapping.h>
 #endif
@@ -3300,12 +3304,13 @@ static int touch_event_handler(void *unused)
 		{
 			input_x =touch_key_point_maping_array[i].point_x;
 			input_y = touch_key_point_maping_array[i].point_y;
-			#ifdef CONFIG_POCKETMOD
+			#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
 			// fix for lower button wakeup
-			if(is_screen_on == 1) 
+			if(dt2w_scr_suspended == false) 
 				{
 				tpd_down( input_x, input_y, 0, 0);
 				}
+				// avoid button touches being recognized as digitizer presses
 				else if(touch_key_point_maping_array[i].point_y<1920) {
 					tpd_down( input_x, input_y, 0, 0);
 				}
@@ -3357,8 +3362,8 @@ static int touch_event_handler(void *unused)
                 }
             #endif
                 GTP_DEBUG(" %d)(%d, %d)[%d]", id, input_x, input_y, input_w);
-			#ifdef CONFIG_POCKETMOD
-                        if(is_screen_on == 1)
+			#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+                        if(dt2w_scr_suspended == false)
                                 {
                                 tpd_down( input_x, input_y, 0, 0);
                                 }
