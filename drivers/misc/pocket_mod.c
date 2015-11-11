@@ -74,7 +74,7 @@ static ssize_t pocket_mod_set(struct device *dev,
 	return size;
 }
 
-static DEVICE_ATTR(pocket_mod_enable, 0777,
+static DEVICE_ATTR(pocket_mod_enable, (S_IWUSR|S_IRUGO),
 		pocket_mod_show, pocket_mod_set);
 
 static struct attribute *pocket_mod_attributes[] =
