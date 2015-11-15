@@ -2451,8 +2451,7 @@ static s32 tpd_i2c_probe(struct i2c_client *client, const struct i2c_device_id *
 	struct kobject *tp_kobj;
 	GTP_INFO("tpd_i2c_probe start.");
 
-    if (RECOVERY_BOOT == get_boot_mode())
-        return 0;
+  //  if (RECOVERY_BOOT == get_boot_mode()) return 0;
    
 	probe_thread =kthread_run(tpd_registration, client, "tpd_probe");
 	if (IS_ERR(probe_thread))
