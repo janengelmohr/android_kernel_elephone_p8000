@@ -51,7 +51,6 @@ int device_is_pocketed(void) {
 		}
 	}
 
-	printk(KERN_INFO "%s: screen is on\n", __func__);
 	return 0;
 }
 
