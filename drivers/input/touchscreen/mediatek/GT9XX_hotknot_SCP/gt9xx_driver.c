@@ -3364,7 +3364,7 @@ static int touch_event_handler(void *unused)
 			#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
                         if(dt2w_scr_suspended == false)
                                 {
-                                tpd_down( input_x, input_y, 0, 0);
+                                tpd_down( input_x, input_y, input_w, id);
                                 }
 			else
 			// fix doubletap to wake to be only active in the center of the screen
