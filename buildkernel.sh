@@ -6,7 +6,7 @@
 export ARCH=arm64
 export CONFIG_NO_ERROR_ON_MISMATCH=y
 export CROSS_COMPILE=aarch64-linux-android-
-export PATH=/home/osboxes/toolchains/aarch64-linux-android-4.9/bin:$PATH
+export PATH=/home/osboxes/toolchains/aarch64-linux-android-4.9_modded/bin:$PATH
 #export CONFIG_DEBUG_SECTION_MISMATCH=y
 
 find ./ -name '*~' -o -name '*.bak' | xargs rm;
