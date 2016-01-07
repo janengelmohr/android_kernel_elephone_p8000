@@ -5,3 +5,4 @@ drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/inc/cust_kpd.dtsi
 drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/inc/cust_md1_eint.dtsi
 *~
 *.bak
+patch.patch
