@@ -35,11 +35,7 @@
 int is_screen_on = 1;
 char alsps_dev;
 
-#ifdef CONFIG_POCKETMOD
-unsigned pocket_mod_switch = 1;
-#else
 unsigned pocket_mod_switch = 0;
-#endif
 
 int device_is_pocketed(void) {
 
