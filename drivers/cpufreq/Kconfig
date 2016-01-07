@@ -131,6 +131,12 @@ config CPU_FREQ_DEFAULT_GOV_WHEATLEY
 	help
 	  Use the CPUFreq governor 'wheatley' as default.
 
+config CPU_FREQ_DEFAULT_GOV_ALUCARD
+	bool "alucard"
+	select CPU_FREQ_GOV_ALUCARD
+	help
+	  Use the CPUFreq governor 'alucard' as default
+
 config CPU_FREQ_DEFAULT_GOV_SMARTMAX
 	bool "smartmax"
 	select CPU_FREQ_GOV_SMARTMAX
@@ -313,6 +319,14 @@ config CPU_FREQ_GOV_WHEATLEY
           'cpufreq_wheatley' - A dynamic cpufreq governor for 
           Low Latency Frequency Transition capable processors
 
+          For details, take a look at linux/Documentation/cpu-freq.
+
+          If in doubt, say N.
+
+config CPU_FREQ_GOV_ALUCARD
+	tristate "'alucard' cpufreq governor"
+	depends on CPU_FREQ
+	help
           For details, take a look at linux/Documentation/cpu-freq.
 
           If in doubt, say N.
