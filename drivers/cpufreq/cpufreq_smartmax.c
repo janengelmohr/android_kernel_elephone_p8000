@@ -1035,7 +1035,7 @@ static void dbs_input_event(struct input_handle *handle, unsigned int type,
 	}
 }
 
-static int input_dev_filter(const char* input_dev_name) {
+static int input_dev_filter(const char *input_dev_name) {
 	int ret = 0;
 	if (strstr(input_dev_name, "touchscreen")
 			/* Add all touch panel drivers for touch boost */
