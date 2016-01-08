@@ -161,7 +161,7 @@ static int pocket_mod_init(void) {
 
 	rc = pocket_mod_init_sysfs();
 
-	sensor_check = AP3XX6_pocket_detection_check;
+	sensor_check = AP3xx6_pocket_detection_check;
 
 	return rc;
 
