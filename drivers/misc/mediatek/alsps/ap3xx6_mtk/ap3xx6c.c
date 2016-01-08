@@ -2086,7 +2086,6 @@ static int __init AP3xx6_init(void)
 int AP3xx6_pocket_detection_check(void)
 {
 	int ps_val;
-	int als_val;
 
 	struct AP3xx6_priv *obj = AP3xx6_obj;
 	
@@ -2102,9 +2101,8 @@ int AP3xx6_pocket_detection_check(void)
 		msleep(50);
 
 		ps_val = AP3xx6_get_ps_value(obj, obj->ps);
-		als_val = AP3xx6_get_als_value(obj, obj->ps);
 
-		APS_DBG("[AP3xx6] %s als_val = %d, ps_val = %d\n", __func__, als_val, ps_val);
+		APS_DBG("[AP3xx6] %s ps_val = %d\n", __func__, ps_val);
 
 		AP3xx6_enable_ps(obj->client, 0);
 
