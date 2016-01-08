@@ -11,7 +11,7 @@ export PATH=/home/osboxes/toolchains/aarch64-linux-android-4.9_modded/bin:$PATH
 
 find ./ -name '*~' -o -name '*.bak' | xargs rm;
 rm -rf ~/.ccache;
-make distclean -i -w V=0 && make mrproper -i -w V=0;
+make distclean -w V=0 && make mrproper -w V=0;
 echo "Compiling Kernel, using config file $1, this might take long, window will be closed after it is done...";
 echo "You will find the Logs of kernel compilation in build.log file.";
 rm ./.config;
