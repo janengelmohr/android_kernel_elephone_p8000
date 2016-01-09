@@ -35,7 +35,7 @@
 int is_screen_on;
 
 #ifdef CONFIG_POCKETMOD
-unsigned pocket_mod_switch = 1;
+unsigned pocket_mod_switch = 0;
 #else
 unsigned pocket_mod_switch = 0;
 #endif
@@ -47,6 +47,8 @@ static int prev_res = 0;
 static int (*sensor_check)(void) = NULL;
 
 int device_is_pocketed(void) {
+
+	/*int check_response;
 
 	if (!(pocket_mod_switch))
 		return 0;
@@ -62,15 +64,19 @@ int device_is_pocketed(void) {
 			read_time_pre = ktime_to_ms(ktime_get());
 		}
 		if (pocket_mod_switch){
-			if (sensor_check() == 1) {
+			check_response = sensor_check();
+
+			if (check_response == 1) {
 				prev_res = 0;
 				return 0;
-			} else {
+			} else if (check_response == 0) {
 				prev_res = 1;
 				return 1;
+			} else {
+				return prev_res;
 			}
 		}
-	}
+	}*/
 
 	return 0;
 }
@@ -88,8 +94,9 @@ static ssize_t pocket_mod_set(struct device *dev,
 
 	sscanf(buf, "%u\n", &val);
 
-	if ( ( val == 0 ) || ( val == 1 ) )
-		pocket_mod_switch = val;
+	// disable changeability for now
+	/*if ( ( val == 0 ) || ( val == 1 ) )
+		pocket_mod_switch = val;*/
 
 	return size;
 }
