@@ -2,13 +2,14 @@
 
 #alternative working tc: aarch64-linux-android-4.9-kernel
 #alternative working tc: android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9
-#alternative working tc (best alternative): /home/osboxes/toolchains/aarch64-linux-android-4.9_unmodded
+#alternative working tc: /home/osboxes/toolchains/aarch64-linux-android-4.9_unmodded
 #alternative working tc: /home/osboxes/toolchains/aarch64-linux-gnu-5.3/bin
+#alternative working tc (best alternative): /home/osboxes/toolchains/ubertc/aarch64-linux-android-4.9-kernel/bin
 
 export ARCH=arm64
 export CONFIG_NO_ERROR_ON_MISMATCH=y
-export CROSS_COMPILE=aarch64-linux-android-
-export PATH=/home/osboxes/toolchains/ubertc/aarch64-linux-android-4.9-kernel/bin:$PATH
+export CROSS_COMPILE=aarch64-
+export PATH=/home/osboxes/toolchains/sabermod/aarch64-linux-gnu-5.3/bin:$PATH
 #export CONFIG_DEBUG_SECTION_MISMATCH=y
 
 find ./ -name '*~' -o -name '*.bak' | xargs rm;
