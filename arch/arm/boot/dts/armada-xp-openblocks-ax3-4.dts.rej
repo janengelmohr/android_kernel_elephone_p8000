@@ -1,0 +1,11 @@
+--- arch/arm/boot/dts/armada-xp-openblocks-ax3-4.dts
++++ arch/arm/boot/dts/armada-xp-openblocks-ax3-4.dts
+@@ -156,7 +160,7 @@
+ 				/* Device Bus parameters are required */
+ 
+ 				/* Read parameters */
+-				devbus,bus-width    = <8>;
++				devbus,bus-width    = <16>;
+ 				devbus,turn-off-ps  = <60000>;
+ 				devbus,badr-skew-ps = <0>;
+ 				devbus,acc-first-ps = <124000>;

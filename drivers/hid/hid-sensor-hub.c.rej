@@ -1,0 +1,36 @@
+--- drivers/hid/hid-sensor-hub.c
++++ drivers/hid/hid-sensor-hub.c
+@@ -327,7 +328,8 @@
+ 				field->logical == attr_usage_id) {
+ 				sensor_hub_fill_attr_info(info, i, report->id,
+ 					field->unit, field->unit_exponent,
+-					field->report_size);
++					field->report_size *
++							field->report_count);
+ 				ret = 0;
+ 			} else {
+ 				for (j = 0; j < field->maxusage; ++j) {
+@@ -339,7 +341,8 @@
+ 							i, report->id,
+ 							field->unit,
+ 							field->unit_exponent,
+-							field->report_size);
++							field->report_size *
++							field->report_count);
+ 						ret = 0;
+ 						break;
+ 					}
+@@ -426,9 +429,10 @@
+ 		hid_dbg(hdev, "%d collection_index:%x hid:%x sz:%x\n",
+ 				i, report->field[i]->usage->collection_index,
+ 				report->field[i]->usage->hid,
+-				report->field[i]->report_size/8);
+-
+-		sz = report->field[i]->report_size/8;
++				(report->field[i]->report_size *
++					report->field[i]->report_count)/8);
++		sz = (report->field[i]->report_size *
++					report->field[i]->report_count)/8;
+ 		if (pdata->pending.status && pdata->pending.attr_usage_id ==
+ 				report->field[i]->usage->hid) {
+ 			hid_dbg(hdev, "data was pending ...\n");

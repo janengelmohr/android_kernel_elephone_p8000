@@ -1,0 +1,10 @@
+--- arch/mips/lantiq/dts/easy50712.dts
++++ arch/mips/lantiq/dts/easy50712.dts
+@@ -8,6 +8,7 @@
+ 	};
+ 
+ 	memory@0 {
++		device_type = "memory";
+ 		reg = <0x0 0x2000000>;
+ 	};
+ 

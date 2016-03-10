@@ -1,0 +1,10 @@
+--- arch/sh/kernel/kgdb.c
++++ arch/sh/kernel/kgdb.c
+@@ -13,6 +13,7 @@
+ #include <linux/kdebug.h>
+ #include <linux/irq.h>
+ #include <linux/io.h>
++#include <linux/sched.h>
+ #include <asm/cacheflush.h>
+ #include <asm/traps.h>
+ 

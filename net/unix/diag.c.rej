@@ -1,0 +1,10 @@
+--- net/unix/diag.c
++++ net/unix/diag.c
+@@ -124,6 +124,7 @@
+ 	rep->udiag_family = AF_UNIX;
+ 	rep->udiag_type = sk->sk_type;
+ 	rep->udiag_state = sk->sk_state;
++	rep->pad = 0;
+ 	rep->udiag_ino = sk_ino;
+ 	sock_diag_save_cookie(sk, rep->udiag_cookie);
+ 

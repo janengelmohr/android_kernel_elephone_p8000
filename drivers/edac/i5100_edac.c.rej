@@ -1,0 +1,11 @@
+--- drivers/edac/i5100_edac.c
++++ drivers/edac/i5100_edac.c
+@@ -974,7 +974,7 @@
+ 	if (!i5100_debugfs)
+ 		return -ENODEV;
+ 
+-	priv->debugfs = debugfs_create_dir(mci->bus.name, i5100_debugfs);
++	priv->debugfs = debugfs_create_dir(mci->bus->name, i5100_debugfs);
+ 
+ 	if (!priv->debugfs)
+ 		return -ENOMEM;

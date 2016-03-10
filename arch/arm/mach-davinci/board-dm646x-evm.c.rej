@@ -1,0 +1,10 @@
+--- arch/arm/mach-davinci/board-dm646x-evm.c
++++ arch/arm/mach-davinci/board-dm646x-evm.c
+@@ -90,6 +90,7 @@
+ 	.parts			= davinci_nand_partitions,
+ 	.nr_parts		= ARRAY_SIZE(davinci_nand_partitions),
+ 	.ecc_mode		= NAND_ECC_HW,
++	.ecc_bits		= 1,
+ 	.options		= 0,
+ };
+ 

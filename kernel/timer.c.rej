@@ -1,0 +1,26 @@
+--- kernel/timer.c
++++ kernel/timer.c
+@@ -149,9 +149,11 @@
+ 	/* now that we have rounded, subtract the extra skew again */
+ 	j -= cpu * 3;
+ 
+-	if (j <= jiffies) /* rounding ate our timeout entirely; */
+-		return original;
+-	return j;
++	/*
++	 * Make sure j is still in the future. Otherwise return the
++	 * unmodified value.
++	 */
++	return time_is_after_jiffies(j) ? j : original;
+ }
+ 
+ /**
+@@ -820,7 +822,7 @@
+ 
+ 	bit = find_last_bit(&mask, BITS_PER_LONG);
+ 
+-	mask = (1 << bit) - 1;
++	mask = (1UL << bit) - 1;
+ 
+ 	expires_limit = expires_limit & ~(mask);
+ 

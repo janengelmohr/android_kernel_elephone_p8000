@@ -1,0 +1,21 @@
+--- Documentation/kernel-parameters.txt
++++ Documentation/kernel-parameters.txt
+@@ -1061,6 +1061,7 @@
+ 	i8042.notimeout	[HW] Ignore timeout condition signalled by controller
+ 	i8042.reset	[HW] Reset the controller during init and cleanup
+ 	i8042.unlock	[HW] Unlock (ignore) the keylock
++	i8042.kbdreset  [HW] Reset device connected to KBD port
+ 
+ 	i810=		[HW,DRM]
+ 
+@@ -1456,6 +1457,10 @@
+ 
+ 			* dump_id: dump IDENTIFY data.
+ 
++			* atapi_dmadir: Enable ATAPI DMADIR bridge support
++
++			* disable: Disable this device.
++
+ 			If there are multiple matching configurations changing
+ 			the same attribute, the last one is used.
+ 

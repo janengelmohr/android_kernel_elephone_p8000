@@ -1,0 +1,11 @@
+--- drivers/lguest/x86/core.c
++++ drivers/lguest/x86/core.c
+@@ -700,7 +700,7 @@
+ 	 * interrupts are enabled.  We always leave interrupts enabled while
+ 	 * running the Guest.
+ 	 */
+-	regs->eflags = X86_EFLAGS_IF | X86_EFLAGS_BIT1;
++	regs->eflags = X86_EFLAGS_IF | X86_EFLAGS_FIXED;
+ 
+ 	/*
+ 	 * The "Extended Instruction Pointer" register says where the Guest is

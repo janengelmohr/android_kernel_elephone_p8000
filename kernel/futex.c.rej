@@ -1,0 +1,103 @@
+--- kernel/futex.c
++++ kernel/futex.c
+@@ -61,12 +61,15 @@
+ #include <linux/nsproxy.h>
+ #include <linux/ptrace.h>
+ #include <linux/sched/rt.h>
++#include <linux/hugetlb.h>
+ 
+ #include <asm/futex.h>
+ 
+ #include "rtmutex_common.h"
+ 
++#ifndef CONFIG_HAVE_FUTEX_CMPXCHG
+ int __read_mostly futex_cmpxchg_enabled;
++#endif
+ 
+ #define FUTEX_HASHBITS (CONFIG_BASE_SMALL ? 4 : 8)
+ 
+@@ -667,34 +720,70 @@
+ 			WARN_ON(!atomic_read(&pi_state->refcount));
+ 
+ 			/*
+-			 * When pi_state->owner is NULL then the owner died
+-			 * and another waiter is on the fly. pi_state->owner
+-			 * is fixed up by the task which acquires
+-			 * pi_state->rt_mutex.
+-			 *
+-			 * We do not check for pid == 0 which can happen when
+-			 * the owner died and robust_list_exit() cleared the
+-			 * TID.
++			 * Handle the owner died case:
+ 			 */
+-			if (pid && pi_state->owner) {
++			if (uval & FUTEX_OWNER_DIED) {
+ 				/*
+-				 * Bail out if user space manipulated the
+-				 * futex value.
++				 * exit_pi_state_list sets owner to NULL and
++				 * wakes the topmost waiter. The task which
++				 * acquires the pi_state->rt_mutex will fixup
++				 * owner.
+ 				 */
+-				if (pid != task_pid_vnr(pi_state->owner))
++				if (!pi_state->owner) {
++					/*
++					 * No pi state owner, but the user
++					 * space TID is not 0. Inconsistent
++					 * state. [5]
++					 */
++					if (pid)
++						return -EINVAL;
++					/*
++					 * Take a ref on the state and
++					 * return. [4]
++					 */
++					goto out_state;
++				}
++
++				/*
++				 * If TID is 0, then either the dying owner
++				 * has not yet executed exit_pi_state_list()
++				 * or some waiter acquired the rtmutex in the
++				 * pi state, but did not yet fixup the TID in
++				 * user space.
++				 *
++				 * Take a ref on the state and return. [6]
++				 */
++				if (!pid)
++					goto out_state;
++			} else {
++				/*
++				 * If the owner died bit is not set,
++				 * then the pi_state must have an
++				 * owner. [7]
++				 */
++				if (!pi_state->owner)
+ 					return -EINVAL;
+ 			}
+ 
++			/*
++			 * Bail out if user space manipulated the
++			 * futex value. If pi state exists then the
++			 * owner TID must be the same as the user
++			 * space TID. [9/10]
++			 */
++			if (pid != task_pid_vnr(pi_state->owner))
++				return -EINVAL;
++
++		out_state:
+ 			atomic_inc(&pi_state->refcount);
+ 			*ps = pi_state;
+-
+ 			return 0;
+ 		}
+ 	}
+ 
+ 	/*
+ 	 * We are the first waiter - try to look up the real owner and attach
+-	 * the new pi_state to it, but bail out when TID = 0
++	 * the new pi_state to it, but bail out when TID = 0 [1]
+ 	 */
+ 	if (!pid)
+ 		return -ESRCH;

@@ -1,0 +1,87 @@
+--- drivers/usb/class/cdc-acm.c
++++ drivers/usb/class/cdc-acm.c
+@@ -1462,18 +1490,15 @@
+ 	struct acm *acm = usb_get_intfdata(intf);
+ 	int cnt;
+ 
++	spin_lock_irq(&acm->read_lock);
++	spin_lock(&acm->write_lock);
+ 	if (PMSG_IS_AUTO(message)) {
+-		int b;
+-
+-		spin_lock_irq(&acm->write_lock);
+-		b = acm->transmitting;
+-		spin_unlock_irq(&acm->write_lock);
+-		if (b)
++		if (acm->transmitting) {
++			spin_unlock(&acm->write_lock);
++			spin_unlock_irq(&acm->read_lock);
+ 			return -EBUSY;
++		}
+ 	}
+-
+-	spin_lock_irq(&acm->read_lock);
+-	spin_lock(&acm->write_lock);
+ 	cnt = acm->susp_count++;
+ 	spin_unlock(&acm->write_lock);
+ 	spin_unlock_irq(&acm->read_lock);
+@@ -1489,29 +1513,24 @@
+ static int acm_resume(struct usb_interface *intf)
+ {
+ 	struct acm *acm = usb_get_intfdata(intf);
+-	struct acm_wb *wb;
++	struct urb *urb;
+ 	int rv = 0;
+-	int cnt;
+ 
+ 	spin_lock_irq(&acm->read_lock);
+-	acm->susp_count -= 1;
+-	cnt = acm->susp_count;
+-	spin_unlock_irq(&acm->read_lock);
++	spin_lock(&acm->write_lock);
+ 
+-	if (cnt)
+-		return 0;
++	if (--acm->susp_count)
++		goto out;
+ 
+ 	if (test_bit(ASYNCB_INITIALIZED, &acm->port.flags)) {
+-		rv = usb_submit_urb(acm->ctrlurb, GFP_NOIO);
+-
+-		spin_lock_irq(&acm->write_lock);
+-		if (acm->delayed_wb) {
+-			wb = acm->delayed_wb;
+-			acm->delayed_wb = NULL;
+-			spin_unlock_irq(&acm->write_lock);
+-			acm_start_wb(acm, wb);
+-		} else {
+-			spin_unlock_irq(&acm->write_lock);
++		rv = usb_submit_urb(acm->ctrlurb, GFP_ATOMIC);
++
++		for (;;) {
++			urb = usb_get_from_anchor(&acm->delayed);
++			if (!urb)
++				break;
++
++			acm_start_wb(acm, urb->context);
+ 		}
+ 
+ 		/*
+@@ -1519,12 +1538,14 @@
+ 		 * do the write path at all cost
+ 		 */
+ 		if (rv < 0)
+-			goto err_out;
++			goto out;
+ 
+-		rv = acm_submit_read_urbs(acm, GFP_NOIO);
++		rv = acm_submit_read_urbs(acm, GFP_ATOMIC);
+ 	}
++out:
++	spin_unlock(&acm->write_lock);
++	spin_unlock_irq(&acm->read_lock);
+ 
+-err_out:
+ 	return rv;
+ }
+ 

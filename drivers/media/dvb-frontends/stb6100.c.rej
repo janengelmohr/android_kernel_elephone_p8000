@@ -1,0 +1,34 @@
+--- drivers/media/dvb-frontends/stb6100.c
++++ drivers/media/dvb-frontends/stb6100.c
+@@ -31,6 +31,8 @@
+ static unsigned int verbose;
+ module_param(verbose, int, 0644);
+ 
++/* Max transfer size done by I2C transfer functions */
++#define MAX_XFER_SIZE  64
+ 
+ #define FE_ERROR		0
+ #define FE_NOTICE		1
+@@ -183,7 +185,7 @@
+ static int stb6100_write_reg_range(struct stb6100_state *state, u8 buf[], int start, int len)
+ {
+ 	int rc;
+-	u8 cmdbuf[len + 1];
++	u8 cmdbuf[MAX_XFER_SIZE];
+ 	struct i2c_msg msg = {
+ 		.addr	= state->config->tuner_address,
+ 		.flags	= 0,
+@@ -191,6 +193,13 @@
+ 		.len	= len + 1
+ 	};
+ 
++	if (1 + len > sizeof(buf)) {
++		printk(KERN_WARNING
++		       "%s: i2c wr: len=%d is too big!\n",
++		       KBUILD_MODNAME, len);
++		return -EINVAL;
++	}
++
+ 	if (unlikely(start < 1 || start + len > STB6100_NUMREGS)) {
+ 		dprintk(verbose, FE_ERROR, 1, "Invalid register range %d:%d",
+ 			start, len);

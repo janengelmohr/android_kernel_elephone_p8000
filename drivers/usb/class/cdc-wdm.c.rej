@@ -1,0 +1,22 @@
+--- drivers/usb/class/cdc-wdm.c
++++ drivers/usb/class/cdc-wdm.c
+@@ -257,14 +258,16 @@
+ 		clear_bit(WDM_POLL_RUNNING, &desc->flags);
+ 		dev_err(&desc->intf->dev,
+ 			"unknown notification %d received: index %d len %d\n",
+-			dr->bNotificationType, dr->wIndex, dr->wLength);
++			dr->bNotificationType,
++			le16_to_cpu(dr->wIndex),
++			le16_to_cpu(dr->wLength));
+ 		goto exit;
+ 	}
+ 
+ 	spin_lock(&desc->iuspin);
+ 	clear_bit(WDM_READ, &desc->flags);
+-	set_bit(WDM_RESPONDING, &desc->flags);
+-	if (!test_bit(WDM_DISCONNECTING, &desc->flags)
++	responding = test_and_set_bit(WDM_RESPONDING, &desc->flags);
++	if (!responding && !test_bit(WDM_DISCONNECTING, &desc->flags)
+ 		&& !test_bit(WDM_SUSPENDING, &desc->flags)) {
+ 		rv = usb_submit_urb(desc->response, GFP_ATOMIC);
+ 		dev_dbg(&desc->intf->dev, "%s: usb_submit_urb %d",

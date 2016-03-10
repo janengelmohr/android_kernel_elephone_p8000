@@ -1,0 +1,28 @@
+--- arch/score/mm/fault.c
++++ arch/score/mm/fault.c
+@@ -99,21 +103,23 @@
+ 	if (write) {
+ 		if (!(vma->vm_flags & VM_WRITE))
+ 			goto bad_area;
++		flags |= FAULT_FLAG_WRITE;
+ 	} else {
+ 		if (!(vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
+ 			goto bad_area;
+ 	}
+ 
+-survive:
+ 	/*
+ 	* If for any reason at all we couldn't handle the fault,
+ 	* make sure we exit gracefully rather than endlessly redo
+ 	* the fault.
+ 	*/
+-	fault = handle_mm_fault(mm, vma, address, write);
++	fault = handle_mm_fault(mm, vma, address, flags);
+ 	if (unlikely(fault & VM_FAULT_ERROR)) {
+ 		if (fault & VM_FAULT_OOM)
+ 			goto out_of_memory;
++		else if (fault & VM_FAULT_SIGSEGV)
++			goto bad_area;
+ 		else if (fault & VM_FAULT_SIGBUS)
+ 			goto do_sigbus;
+ 		BUG();

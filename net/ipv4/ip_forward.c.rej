@@ -1,0 +1,22 @@
+--- net/ipv4/ip_forward.c
++++ net/ipv4/ip_forward.c
+@@ -58,9 +-10,6 @@
+ 	struct rtable *rt;	/* Route we use */
+ 	struct ip_options *opt	= &(IPCB(skb)->opt);
+ 
+-	if (unlikely(skb->sk))
+-		goto drop;
+-
+ 	if (skb_warn_if_lro(skb))
+ 		goto drop;
+ 
+@@ -111,8 +41,7 @@
+ 	 *	We now generate an ICMP HOST REDIRECT giving the route
+ 	 *	we calculated.
+ 	 */
+-	if (IPCB(skb)->flags & IPSKB_DOREDIRECT && !opt->srr &&
+-	    !skb_sec_path(skb))
++	if (rt->rt_flags&RTCF_DOREDIRECT && !opt->srr && !skb_sec_path(skb))
+ 		ip_rt_send_redirect(skb);
+ 
+ 	skb->priority = rt_tos2priority(iph->tos);

@@ -1,0 +1,38 @@
+--- drivers/hwmon/adt7470.c
++++ drivers/hwmon/adt7470.c
+@@ -215,7 +215,7 @@
+ 					  u16 value)
+ {
+ 	return i2c_smbus_write_byte_data(client, reg, value & 0xFF)
+-	       && i2c_smbus_write_byte_data(client, reg + 1, value >> 8);
++	       || i2c_smbus_write_byte_data(client, reg + 1, value >> 8);
+ }
+ 
+ static void adt7470_init_client(struct i2c_client *client)
+@@ -515,7 +515,7 @@
+ 		return -EINVAL;
+ 
+ 	temp = DIV_ROUND_CLOSEST(temp, 1000);
+-	temp = clamp_val(temp, 0, 255);
++	temp = clamp_val(temp, -128, 127);
+ 
+ 	mutex_lock(&data->lock);
+ 	data->temp_min[attr->index] = temp;
+@@ -549,7 +549,7 @@
+ 		return -EINVAL;
+ 
+ 	temp = DIV_ROUND_CLOSEST(temp, 1000);
+-	temp = clamp_val(temp, 0, 255);
++	temp = clamp_val(temp, -128, 127);
+ 
+ 	mutex_lock(&data->lock);
+ 	data->temp_max[attr->index] = temp;
+@@ -826,7 +826,7 @@
+ 		return -EINVAL;
+ 
+ 	temp = DIV_ROUND_CLOSEST(temp, 1000);
+-	temp = clamp_val(temp, 0, 255);
++	temp = clamp_val(temp, -128, 127);
+ 
+ 	mutex_lock(&data->lock);
+ 	data->pwm_tmin[attr->index] = temp;

@@ -1,0 +1,11 @@
+--- sound/soc/codecs/wm8904.c
++++ sound/soc/codecs/wm8904.c
+@@ -1449,7 +1449,7 @@
+ 
+ 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
+ 	case SND_SOC_DAIFMT_DSP_B:
+-		aif1 |= WM8904_AIF_LRCLK_INV;
++		aif1 |= 0x3 | WM8904_AIF_LRCLK_INV;
+ 	case SND_SOC_DAIFMT_DSP_A:
+ 		aif1 |= 0x3;
+ 		break;

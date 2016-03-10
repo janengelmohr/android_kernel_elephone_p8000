@@ -1,0 +1,19 @@
+--- drivers/mtd/ubi/upd.c
++++ drivers/mtd/ubi/upd.c
+@@ -156,14 +160,12 @@
+ 		err = clear_update_marker(ubi, vol, 0);
+ 		if (err)
+ 			return err;
++
++		vfree(vol->upd_buf);
+ 		vol->updating = 0;
+ 		return 0;
+ 	}
+ 
+-	vol->upd_buf = vmalloc(ubi->leb_size);
+-	if (!vol->upd_buf)
+-		return -ENOMEM;
+-
+ 	vol->upd_ebs = div_u64(bytes + vol->usable_leb_size - 1,
+ 			       vol->usable_leb_size);
+ 	vol->upd_bytes = bytes;

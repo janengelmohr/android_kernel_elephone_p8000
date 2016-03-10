@@ -1,0 +1,11 @@
+--- arch/x86/kvm/irq.c
++++ arch/x86/kvm/irq.c
+@@ -108,7 +108,7 @@
+ 
+ 	vector = kvm_cpu_get_extint(v);
+ 
+-	if (kvm_apic_vid_enabled(v->kvm) || vector != -1)
++	if (vector != -1)
+ 		return vector;			/* PIC */
+ 
+ 	return kvm_get_apic_interrupt(v);	/* APIC */

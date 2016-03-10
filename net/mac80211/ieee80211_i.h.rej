@@ -1,0 +1,35 @@
+--- net/mac80211/ieee80211_i.h
++++ net/mac80211/ieee80211_i.h
+@@ -322,6 +333,7 @@
+ 
+ 	bool started, abort, hw_begun, notified;
+ 	bool to_be_freed;
++	bool on_channel;
+ 
+ 	unsigned long hw_start_time;
+ 
+@@ -853,6 +865,8 @@
+  *	that the scan completed.
+  * @SCAN_ABORTED: Set for our scan work function when the driver reported
+  *	a scan complete for an aborted scan.
++ * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
++ *	cancelled.
+  */
+ enum {
+ 	SCAN_SW_SCANNING,
+@@ -860,6 +874,7 @@
+ 	SCAN_ONCHANNEL_SCANNING,
+ 	SCAN_COMPLETED,
+ 	SCAN_ABORTED,
++	SCAN_HW_CANCELLED,
+ };
+ 
+ /**
+@@ -1278,6 +1293,7 @@
+ void ieee80211_mgd_stop(struct ieee80211_sub_if_data *sdata);
+ void ieee80211_mgd_conn_tx_status(struct ieee80211_sub_if_data *sdata,
+ 				  __le16 fc, bool acked);
++void ieee80211_mgd_quiesce(struct ieee80211_sub_if_data *sdata);
+ void ieee80211_sta_restart(struct ieee80211_sub_if_data *sdata);
+ 
+ /* IBSS code */

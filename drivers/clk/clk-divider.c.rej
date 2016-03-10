@@ -1,0 +1,11 @@
+--- drivers/clk/clk-divider.c
++++ drivers/clk/clk-divider.c
+@@ -87,7 +87,7 @@
+ 	return 0;
+ }
+ 
+-static unsigned int _get_val(struct clk_divider *divider, u8 div)
++static unsigned int _get_val(struct clk_divider *divider, unsigned int div)
+ {
+ 	if (divider->flags & CLK_DIVIDER_ONE_BASED)
+ 		return div;

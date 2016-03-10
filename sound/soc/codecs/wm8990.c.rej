@@ -1,0 +1,11 @@
+--- sound/soc/codecs/wm8990.c
++++ sound/soc/codecs/wm8990.c
+@@ -1264,6 +1264,8 @@
+ 
+ 		/* disable POBCTRL, SOFT_ST and BUFDCOPEN */
+ 		snd_soc_write(codec, WM8990_ANTIPOP2, 0x0);
++
++		codec->cache_sync = 1;
+ 		break;
+ 	}
+ 

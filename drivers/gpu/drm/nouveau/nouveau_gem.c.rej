@@ -1,0 +1,12 @@
+--- drivers/gpu/drm/nouveau/nouveau_gem.c
++++ drivers/gpu/drm/nouveau/nouveau_gem.c
+@@ -288,7 +289,8 @@
+ 	list_for_each_safe(entry, tmp, list) {
+ 		nvbo = list_entry(entry, struct nouveau_bo, entry);
+ 
+-		nouveau_bo_fence(nvbo, fence);
++		if (likely(fence))
++			nouveau_bo_fence(nvbo, fence);
+ 
+ 		if (unlikely(nvbo->validate_mapped)) {
+ 			ttm_bo_kunmap(&nvbo->kmap);

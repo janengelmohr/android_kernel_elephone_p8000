@@ -1,0 +1,28 @@
+--- mm/memory.c
++++ mm/memory.c
+@@ -1938,19 +1948,24 @@
+ 		     unsigned long address, unsigned int fault_flags)
+ {
+ 	struct vm_area_struct *vma;
++	vm_flags_t vm_flags;
+ 	int ret;
+ 
+ 	vma = find_extend_vma(mm, address);
+ 	if (!vma || address < vma->vm_start)
+ 		return -EFAULT;
+ 
++	vm_flags = (fault_flags & FAULT_FLAG_WRITE) ? VM_WRITE : VM_READ;
++	if (!(vm_flags & vma->vm_flags))
++		return -EFAULT;
++
+ 	ret = handle_mm_fault(mm, vma, address, fault_flags);
+ 	if (ret & VM_FAULT_ERROR) {
+ 		if (ret & VM_FAULT_OOM)
+ 			return -ENOMEM;
+ 		if (ret & (VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE))
+ 			return -EHWPOISON;
+-		if (ret & VM_FAULT_SIGBUS)
++		if (ret & (VM_FAULT_SIGBUS | VM_FAULT_SIGSEGV))
+ 			return -EFAULT;
+ 		BUG();
+ 	}

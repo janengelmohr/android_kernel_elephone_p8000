@@ -1,0 +1,25 @@
+--- drivers/mmc/host/atmel-mci.c
++++ drivers/mmc/host/atmel-mci.c
+@@ -1277,7 +1259,7 @@
+ 
+ 	if (ios->clock) {
+ 		unsigned int clock_min = ~0U;
+-		int clkdiv;
++		u32 clkdiv;
+ 
+ 		spin_lock_bh(&host->lock);
+ 		if (!host->mode_reg) {
+@@ -1302,12 +1284,7 @@
+ 		/* Calculate clock divider */
+ 		if (host->caps.has_odd_clk_div) {
+ 			clkdiv = DIV_ROUND_UP(host->bus_hz, clock_min) - 2;
+-			if (clkdiv < 0) {
+-				dev_warn(&mmc->class_dev,
+-					 "clock %u too fast; using %lu\n",
+-					 clock_min, host->bus_hz / 2);
+-				clkdiv = 0;
+-			} else if (clkdiv > 511) {
++			if (clkdiv > 511) {
+ 				dev_warn(&mmc->class_dev,
+ 				         "clock %u too slow; using %lu\n",
+ 				         clock_min, host->bus_hz / (511 + 2));

@@ -1,0 +1,10 @@
+--- include/linux/vm_event_item.h
++++ include/linux/vm_event_item.h
+@@ -39,6 +39,7 @@
+ 		PAGEOUTRUN, ALLOCSTALL, PGROTATED,
+ #ifdef CONFIG_NUMA_BALANCING
+ 		NUMA_PTE_UPDATES,
++		NUMA_HUGE_PTE_UPDATES,
+ 		NUMA_HINT_FAULTS,
+ 		NUMA_HINT_FAULTS_LOCAL,
+ 		NUMA_PAGE_MIGRATE,

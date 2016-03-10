@@ -1,0 +1,15 @@
+--- arch/x86/kvm/lapic.c
++++ arch/x86/kvm/lapic.c
+@@ -1079,10 +1035,10 @@
+ 		if (!nmi_wd_enabled) {
+ 			apic_debug("Receive NMI setting on APIC_LVT0 "
+ 				   "for cpu %d\n", apic->vcpu->vcpu_id);
+-			atomic_inc(&apic->vcpu->kvm->arch.vapics_in_nmi_mode);
++			apic->vcpu->kvm->arch.vapics_in_nmi_mode++;
+ 		}
+ 	} else if (nmi_wd_enabled)
+-		atomic_dec(&apic->vcpu->kvm->arch.vapics_in_nmi_mode);
++		apic->vcpu->kvm->arch.vapics_in_nmi_mode--;
+ }
+ 
+ static int apic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)

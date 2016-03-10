@@ -1,0 +1,11 @@
+--- fs/cifs/smb2inode.c
++++ fs/cifs/smb2inode.c
+@@ -123,7 +123,7 @@
+ 
+ 	*adjust_tz = false;
+ 
+-	smb2_data = kzalloc(sizeof(struct smb2_file_all_info) + MAX_NAME * 2,
++	smb2_data = kzalloc(sizeof(struct smb2_file_all_info) + PATH_MAX * 2,
+ 			    GFP_KERNEL);
+ 	if (smb2_data == NULL)
+ 		return -ENOMEM;

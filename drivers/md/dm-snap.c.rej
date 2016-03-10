@@ -1,0 +1,43 @@
+--- drivers/md/dm-snap.c
++++ drivers/md/dm-snap.c
+@@ -1366,9 +1344,8 @@
+ 	dm_table_event(s->ti->table);
+ }
+ 
+-static void pending_complete(void *context, int success)
++static void pending_complete(struct dm_snap_pending_exception *pe, int success)
+ {
+-	struct dm_snap_pending_exception *pe = context;
+ 	struct dm_exception *e;
+ 	struct dm_snapshot *s = pe->snap;
+ 	struct bio *origin_bios = NULL;
+@@ -1418,6 +1395,8 @@
+ 		full_bio->bi_end_io = pe->full_bio_end_io;
+ 		full_bio->bi_private = pe->full_bio_private;
+ 	}
++	free_pending_exception(pe);
++
+ 	increment_pending_exceptions_done_count();
+ 
+ 	up_write(&s->lock);
+@@ -1434,17 +1413,13 @@
+ 	}
+ 
+ 	retry_origin_bios(s, origin_bios);
+-
+-	free_pending_exception(pe);
+ }
+ 
+-static void complete_exception(struct dm_snap_pending_exception *pe)
++static void commit_callback(void *context, int success)
+ {
+-	struct dm_snapshot *s = pe->snap;
++	struct dm_snap_pending_exception *pe = context;
+ 
+-	/* Update the metadata if we are persistent */
+-	s->store->type->commit_exception(s->store, &pe->e, !pe->copy_error,
+-					 pending_complete, pe);
++	pending_complete(pe, success);
+ }
+ 
+ /*

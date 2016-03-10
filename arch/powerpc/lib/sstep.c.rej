@@ -1,0 +1,11 @@
+--- arch/powerpc/lib/sstep.c
++++ arch/powerpc/lib/sstep.c
+@@ -1395,7 +1395,7 @@
+ 				regs->gpr[rd] = byterev_4(val);
+ 			goto ldst_done;
+ 
+-#ifdef CONFIG_PPC_CPU
++#ifdef CONFIG_PPC_FPU
+ 		case 535:	/* lfsx */
+ 		case 567:	/* lfsux */
+ 			if (!(regs->msr & MSR_FP))

@@ -1,0 +1,17 @@
+--- arch/arm/boot/dts/at91sam9g45.dtsi
++++ arch/arm/boot/dts/at91sam9g45.dtsi
+@@ -35,8 +35,12 @@
+ 		ssc1 = &ssc1;
+ 	};
+ 	cpus {
+-		cpu@0 {
+-			compatible = "arm,arm926ejs";
++		#address-cells = <0>;
++		#size-cells = <0>;
++
++		cpu {
++			compatible = "arm,arm926ej-s";
++			device_type = "cpu";
+ 		};
+ 	};
+ 

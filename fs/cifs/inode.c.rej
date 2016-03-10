@@ -1,0 +1,11 @@
+--- fs/cifs/inode.c
++++ fs/cifs/inode.c
+@@ -822,7 +812,7 @@
+ 	struct dentry *dentry;
+ 
+ 	spin_lock(&inode->i_lock);
+-	hlist_for_each_entry(dentry, &inode->i_dentry, d_u.d_alias) {
++	hlist_for_each_entry(dentry, &inode->i_dentry, d_alias) {
+ 		if (!d_unhashed(dentry) || IS_ROOT(dentry)) {
+ 			spin_unlock(&inode->i_lock);
+ 			return true;

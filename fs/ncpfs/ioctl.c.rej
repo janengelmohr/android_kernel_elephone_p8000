@@ -1,0 +1,10 @@
+--- fs/ncpfs/ioctl.c
++++ fs/ncpfs/ioctl.c
+@@ -448,7 +448,6 @@
+ 						result = -EIO;
+ 					}
+ 				}
+-				result = 0;
+ 			}
+ 			mutex_unlock(&server->root_setup_lock);
+ 

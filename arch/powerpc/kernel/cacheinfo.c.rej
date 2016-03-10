@@ -1,0 +1,12 @@
+--- arch/powerpc/kernel/cacheinfo.c
++++ arch/powerpc/kernel/cacheinfo.c
+@@ -788,6 +788,9 @@
+ {
+ 	remove_index_dirs(cache_dir);
+ 
++	/* Remove cache dir from sysfs */
++	kobject_del(cache_dir->kobj);
++
+ 	kobject_put(cache_dir->kobj);
+ 
+ 	kfree(cache_dir);

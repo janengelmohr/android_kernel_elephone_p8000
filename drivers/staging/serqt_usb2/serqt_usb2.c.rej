@@ -1,0 +1,11 @@
+--- drivers/staging/serqt_usb2/serqt_usb2.c
++++ drivers/staging/serqt_usb2/serqt_usb2.c
+@@ -725,7 +725,7 @@
+ 		goto startup_error;
+ 	}
+ 
+-	switch (serial->dev->descriptor.idProduct) {
++	switch (le16_to_cpu(serial->dev->descriptor.idProduct)) {
+ 	case QUATECH_DSU100:
+ 	case QUATECH_QSU100:
+ 	case QUATECH_ESU100A:

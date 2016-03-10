@@ -1,0 +1,14 @@
+--- arch/x86/kernel/ldt.c
++++ arch/x86/kernel/ldt.c
+@@ -229,6 +229,11 @@
+ 		}
+ 	}
+ 
++	if (!IS_ENABLED(CONFIG_X86_16BIT) && !ldt_info.seg_32bit) {
++		error = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	fill_ldt(&ldt, &ldt_info);
+ 	if (oldmode)
+ 		ldt.avl = 0;

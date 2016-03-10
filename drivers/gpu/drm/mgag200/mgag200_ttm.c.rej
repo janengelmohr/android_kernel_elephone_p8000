@@ -1,0 +1,10 @@
+--- drivers/gpu/drm/mgag200/mgag200_ttm.c
++++ drivers/gpu/drm/mgag200/mgag200_ttm.c
+@@ -347,6 +347,7 @@
+ 
+ 	mgabo->gem.driver_private = NULL;
+ 	mgabo->bo.bdev = &mdev->ttm.bdev;
++	mgabo->bo.bdev->dev_mapping = dev->dev_mapping;
+ 
+ 	mgag200_ttm_placement(mgabo, TTM_PL_FLAG_VRAM | TTM_PL_FLAG_SYSTEM);
+ 

@@ -1,0 +1,10 @@
+build_errors_warnings.log
+drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/inc/cust_adc.dtsi
+drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/inc/cust_clk_buf.dtsi
+drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/inc/cust_kpd.dtsi
+drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/inc/cust_md1_eint.dtsi
+arch/arm64/kernel/vdso/vdso.so
+arch/arm64/kernel/vdso/vdso.so.dbg
+*~
+*.bak
+patch.patch

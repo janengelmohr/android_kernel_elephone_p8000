@@ -1,0 +1,11 @@
+--- drivers/net/ethernet/emulex/benet/be_main.c
++++ drivers/net/ethernet/emulex/benet/be_main.c
+@@ -1761,7 +1755,7 @@
+ 		queue_tail_inc(txq);
+ 	} while (cur_index != last_index);
+ 
+-	dev_kfree_skb_any(sent_skb);
++	kfree_skb(sent_skb);
+ 	return num_wrbs;
+ }
+ 

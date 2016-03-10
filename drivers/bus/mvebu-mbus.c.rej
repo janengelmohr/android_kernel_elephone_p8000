@@ -1,0 +1,15 @@
+--- drivers/bus/mvebu-mbus.c
++++ drivers/bus/mvebu-mbus.c
+@@ -263,12 +276,6 @@
+ 		 */
+ 		if ((u64)base < wend && end > wbase)
+ 			return 0;
+-
+-		/*
+-		 * Check if target/attribute conflicts
+-		 */
+-		if (target == wtarget && attr == wattr)
+-			return 0;
+ 	}
+ 
+ 	return 1;

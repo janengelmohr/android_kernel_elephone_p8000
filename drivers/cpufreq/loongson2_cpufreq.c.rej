@@ -1,0 +1,27 @@
+--- drivers/cpufreq/loongson2_cpufreq.c
++++ drivers/cpufreq/loongson2_cpufreq.c
+@@ -118,11 +118,6 @@
+ 		clk_put(cpuclk);
+ 		return -EINVAL;
+ 	}
+-	ret = clk_set_rate(cpuclk, rate);
+-	if (ret) {
+-		clk_put(cpuclk);
+-		return ret;
+-	}
+ 
+ 	/* clock table init */
+ 	for (i = 2;
+@@ -130,6 +125,12 @@
+ 	     i++)
+ 		loongson2_clockmod_table[i].frequency = (rate * i) / 8;
+ 
++	ret = clk_set_rate(cpuclk, rate);
++	if (ret) {
++		clk_put(cpuclk);
++		return ret;
++	}
++
+ 	policy->cur = loongson2_cpufreq_get(policy->cpu);
+ 
+ 	cpufreq_frequency_table_get_attr(&loongson2_clockmod_table[0],

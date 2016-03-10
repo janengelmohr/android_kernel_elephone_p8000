@@ -1,0 +1,10 @@
+--- arch/sparc/lib/NG2memcpy.S
++++ arch/sparc/lib/NG2memcpy.S
+@@ -236,6 +236,7 @@
+ 	 */
+ 	VISEntryHalf
+ 
++	membar		#Sync
+ 	alignaddr	%o1, %g0, %g0
+ 
+ 	add		%o1, (64 - 1), %o4

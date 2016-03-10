@@ -1,0 +1,28 @@
+--- mm/memory-failure.c
++++ mm/memory-failure.c
+@@ -1104,10 +1091,10 @@
+ 	 * The check (unnecessarily) ignores LRU pages being isolated and
+ 	 * walked by the page reclaim code, however that's not a big loss.
+ 	 */
+-	if (!PageHuge(p)) {
+-		if (!PageLRU(hpage))
+-			shake_page(hpage, 0);
+-		if (!PageLRU(hpage)) {
++	if (!PageHuge(p) && !PageTransTail(p)) {
++		if (!PageLRU(p))
++			shake_page(p, 0);
++		if (!PageLRU(p)) {
+ 			/*
+ 			 * shake_page could have turned it free.
+ 			 */
+@@ -1453,9 +1434,7 @@
+ 		 * Did it turn free?
+ 		 */
+ 		ret = __get_any_page(page, pfn, 0);
+-		if (ret == 1 && !PageLRU(page)) {
+-			/* Drop page reference which is from __get_any_page() */
+-			put_page(page);
++		if (!PageLRU(page)) {
+ 			pr_info("soft_offline: %#lx: unknown non LRU page type %lx\n",
+ 				pfn, page->flags);
+ 			return -EIO;

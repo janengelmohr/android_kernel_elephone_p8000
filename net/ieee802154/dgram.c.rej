@@ -1,0 +1,13 @@
+--- net/ieee802154/dgram.c
++++ net/ieee802154/dgram.c
+@@ -315,9 +315,8 @@
+ 	if (saddr) {
+ 		saddr->family = AF_IEEE802154;
+ 		saddr->addr = mac_cb(skb)->sa;
+-	}
+-	if (addr_len)
+ 		*addr_len = sizeof(*saddr);
++	}
+ 
+ 	if (flags & MSG_TRUNC)
+ 		copied = skb->len;

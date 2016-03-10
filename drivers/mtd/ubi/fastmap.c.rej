@@ -1,0 +1,10 @@
+--- drivers/mtd/ubi/fastmap.c
++++ drivers/mtd/ubi/fastmap.c
+@@ -330,6 +330,7 @@
+ 		av = tmp_av;
+ 	else {
+ 		ubi_err("orphaned volume in fastmap pool!");
++		kmem_cache_free(ai->aeb_slab_cache, new_aeb);
+ 		return UBI_BAD_FASTMAP;
+ 	}
+ 

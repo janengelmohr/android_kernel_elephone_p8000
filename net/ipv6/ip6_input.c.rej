@@ -1,0 +1,16 @@
+--- net/ipv6/ip6_input.c
++++ net/ipv6/ip6_input.c
+@@ -325,10 +325,10 @@
+ 				if (offset < 0)
+ 					goto out;
+ 
+-				if (ipv6_is_mld(skb, nexthdr, offset))
+-					deliver = true;
++				if (!ipv6_is_mld(skb, nexthdr, offset))
++					goto out;
+ 
+-				goto out;
++				deliver = true;
+ 			}
+ 			/* unknown RA - process it normally */
+ 		}

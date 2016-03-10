@@ -1,0 +1,12 @@
+--- net/ipv4/tcp_vegas.c
++++ net/ipv4/tcp_vegas.c
+@@ -218,7 +218,8 @@
+ 			 * This is:
+ 			 *     (actual rate in segments) * baseRTT
+ 			 */
+-			target_cwnd = tp->snd_cwnd * vegas->baseRTT / rtt;
++			target_cwnd = (u64)tp->snd_cwnd * vegas->baseRTT;
++			do_div(target_cwnd, rtt);
+ 
+ 			/* Calculate the difference between the window we had,
+ 			 * and the window we would like to have. This quantity

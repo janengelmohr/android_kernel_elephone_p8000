@@ -1,0 +1,37 @@
+--- kernel/irq/manage.c
++++ kernel/irq/manage.c
+@@ -1235,7 +1241,6 @@
+ 	if (!desc)
+ 		return NULL;
+ 
+-	chip_bus_lock(desc);
+ 	raw_spin_lock_irqsave(&desc->lock, flags);
+ 
+ 	/*
+@@ -1249,7 +1254,7 @@
+ 		if (!action) {
+ 			WARN(1, "Trying to free already-free IRQ %d\n", irq);
+ 			raw_spin_unlock_irqrestore(&desc->lock, flags);
+-			chip_bus_sync_unlock(desc);
++
+ 			return NULL;
+ 		}
+ 
+@@ -1272,7 +1277,6 @@
+ #endif
+ 
+ 	raw_spin_unlock_irqrestore(&desc->lock, flags);
+-	chip_bus_sync_unlock(desc);
+ 
+ 	unregister_handler_proc(irq, action);
+ 
+@@ -1346,7 +1350,9 @@
+ 		desc->affinity_notify = NULL;
+ #endif
+ 
++	chip_bus_lock(desc);
+ 	kfree(__free_irq(irq, dev_id));
++	chip_bus_sync_unlock(desc);
+ }
+ EXPORT_SYMBOL(free_irq);
+ 

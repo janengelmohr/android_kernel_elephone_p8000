@@ -1,0 +1,19 @@
+--- sound/soc/codecs/mc13783.c
++++ sound/soc/codecs/mc13783.c
+@@ -600,14 +596,14 @@
+ 				AUDIO_SSI_SEL, 0);
+ 	else
+ 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_CODEC,
+-				AUDIO_SSI_SEL, AUDIO_SSI_SEL);
++				0, AUDIO_SSI_SEL);
+ 
+ 	if (priv->dac_ssi_port == MC13783_SSI1_PORT)
+ 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_DAC,
+ 				AUDIO_SSI_SEL, 0);
+ 	else
+ 		mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_DAC,
+-				AUDIO_SSI_SEL, AUDIO_SSI_SEL);
++				0, AUDIO_SSI_SEL);
+ 
+ 	mc13xxx_unlock(priv->mc13xxx);
+ 

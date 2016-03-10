@@ -810,8 +810,12 @@ static long read_events(struct kioctx *ctx, long min_nr, long nr,
 	 * the ringbuffer empty. So in practice we should be ok, but it's
 	 * something to be aware of when touching this code.
 	 */
-	wait_event_interruptible_hrtimeout(ctx->wait,
-			aio_read_events(ctx, min_nr, nr, event, &ret), until);
+	if (until.tv64 == 0)
+		aio_read_events(ctx, min_nr, nr, event, &ret);
+	else
+		wait_event_interruptible_hrtimeout(ctx->wait,
+				aio_read_events(ctx, min_nr, nr, event, &ret),
+				until);
 
 	if (!ret && signal_pending(current))
 		ret = -EINTR;
@@ -977,12 +981,17 @@ static ssize_t aio_setup_vectored_rw(int rw, struct kiocb *kiocb, bool compat)
 
 static ssize_t aio_setup_single_vector(int rw, struct kiocb *kiocb)
 {
-	if (unlikely(!access_ok(!rw, kiocb->ki_buf, kiocb->ki_nbytes)))
-		return -EFAULT;
+	size_t len = kiocb->ki_nbytes;
+
+	if (len > MAX_RW_COUNT)
+		len = MAX_RW_COUNT;
+
+	if (unlikely(!access_ok(!rw, kiocb->ki_buf, len)))
+                return -EFAULT;
 
 	kiocb->ki_iovec = &kiocb->ki_inline_vec;
 	kiocb->ki_iovec->iov_base = kiocb->ki_buf;
-	kiocb->ki_iovec->iov_len = kiocb->ki_nbytes;
+	kiocb->ki_iovec->iov_len = len;
 	kiocb->ki_nr_segs = 1;
 	return 0;
 }
@@ -1152,7 +1161,6 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 	struct kioctx *ctx;
 	long ret = 0;
 	int i = 0;
-	struct blk_plug plug;
 
 	if (unlikely(nr < 0))
 		return -EINVAL;
@@ -1168,8 +1176,6 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 		pr_debug("EINVAL: invalid context id\n");
 		return -EINVAL;
 	}
-
-	blk_start_plug(&plug);
 
 	/*
 	 * AKPM: should this return a partial result if some of the IOs were
@@ -1193,8 +1199,6 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 		if (ret)
 			break;
 	}
-	blk_finish_plug(&plug);
-
 	put_ioctx(ctx);
 	return i ? i : ret;
 }

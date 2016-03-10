@@ -1,0 +1,13 @@
+--- arch/powerpc/include/asm/smp.h
++++ arch/powerpc/include/asm/smp.h
+@@ -145,6 +145,10 @@
+ #define smp_setup_cpu_maps()
+ static inline void inhibit_secondary_onlining(void) {}
+ static inline void uninhibit_secondary_onlining(void) {}
++static inline const struct cpumask *cpu_sibling_mask(int cpu)
++{
++	return cpumask_of(cpu);
++}
+ 
+ #endif /* CONFIG_SMP */
+ 

@@ -1,0 +1,11 @@
+--- arch/x86/kvm/lapic.h
++++ arch/x86/kvm/lapic.h
+@@ -165,7 +165,7 @@
+ 
+ static inline bool kvm_apic_has_events(struct kvm_vcpu *vcpu)
+ {
+-	return kvm_vcpu_has_lapic(vcpu) && vcpu->arch.apic->pending_events;
++	return vcpu->arch.apic->pending_events;
+ }
+ 
+ bool kvm_apic_pending_eoi(struct kvm_vcpu *vcpu, int vector);

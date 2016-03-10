@@ -1,0 +1,10 @@
+--- drivers/staging/imx-drm/imx-drm-core.c
++++ drivers/staging/imx-drm/imx-drm-core.c
+@@ -681,6 +681,7 @@
+ 
+ 	return i;
+ }
++EXPORT_SYMBOL_GPL(imx_drm_encoder_get_mux_id);
+ 
+ /*
+  * imx_drm_remove_encoder - remove an encoder

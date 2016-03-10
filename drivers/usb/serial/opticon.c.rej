@@ -1,0 +1,11 @@
+--- drivers/usb/serial/opticon.c
++++ drivers/usb/serial/opticon.c
+@@ -219,7 +219,7 @@
+ 
+ 	/* The conncected devices do not have a bulk write endpoint,
+ 	 * to transmit data to de barcode device the control endpoint is used */
+-	dr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_NOIO);
++	dr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_ATOMIC);
+ 	if (!dr) {
+ 		dev_err(&port->dev, "out of memory\n");
+ 		count = -ENOMEM;

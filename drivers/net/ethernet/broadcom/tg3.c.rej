@@ -1,0 +1,14 @@
+--- drivers/net/ethernet/broadcom/tg3.c
++++ drivers/net/ethernet/broadcom/tg3.c
+@@ -6767,8 +6780,9 @@
+ 		skb->protocol = eth_type_trans(skb, tp->dev);
+ 
+ 		if (len > (tp->dev->mtu + ETH_HLEN) &&
+-		    skb->protocol != htons(ETH_P_8021Q)) {
+-			dev_kfree_skb(skb);
++		    skb->protocol != htons(ETH_P_8021Q) &&
++		    skb->protocol != htons(ETH_P_8021AD)) {
++			dev_kfree_skb_any(skb);
+ 			goto drop_it_no_recycle;
+ 		}
+ 

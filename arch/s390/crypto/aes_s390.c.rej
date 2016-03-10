@@ -1,0 +1,11 @@
+--- arch/s390/crypto/aes_s390.c
++++ arch/s390/crypto/aes_s390.c
+@@ -932,7 +894,7 @@
+ module_init(aes_s390_init);
+ module_exit(aes_s390_fini);
+ 
+-MODULE_ALIAS_CRYPTO("aes-all");
++MODULE_ALIAS("aes-all");
+ 
+ MODULE_DESCRIPTION("Rijndael (AES) Cipher Algorithm");
+ MODULE_LICENSE("GPL");

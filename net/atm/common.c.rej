@@ -1,0 +1,11 @@
+--- net/atm/common.c
++++ net/atm/common.c
+@@ -531,8 +531,6 @@
+ 	struct sk_buff *skb;
+ 	int copied, error = -EINVAL;
+ 
+-	msg->msg_namelen = 0;
+-
+ 	if (sock->state != SS_CONNECTED)
+ 		return -ENOTCONN;
+ 

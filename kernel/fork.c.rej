@@ -1,0 +1,19 @@
+--- kernel/fork.c
++++ kernel/fork.c
+@@ -1636,12 +1649,14 @@
+ 
+ 		/* forking complete and child started to run, tell ptracer */
+ 		if (unlikely(trace))
+-			ptrace_event(trace, nr);
++			ptrace_event_pid(trace, pid);
+ 
+ 		if (clone_flags & CLONE_VFORK) {
+ 			if (!wait_for_vfork_done(p, &vfork))
+-				ptrace_event(PTRACE_EVENT_VFORK_DONE, nr);
++				ptrace_event_pid(PTRACE_EVENT_VFORK_DONE, pid);
+ 		}
++
++		put_pid(pid);
+ 	} else {
+ 		nr = PTR_ERR(p);
+ 	}

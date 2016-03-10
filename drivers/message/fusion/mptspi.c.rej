@@ -1,0 +1,14 @@
+--- drivers/message/fusion/mptspi.c
++++ drivers/message/fusion/mptspi.c
+@@ -1422,6 +1422,11 @@
+ 		goto out_mptspi_probe;
+         }
+ 
++	/* VMWare emulation doesn't properly implement WRITE_SAME
++	 */
++	if (pdev->subsystem_vendor == 0x15AD)
++		sh->no_write_same = 1;
++
+ 	spin_lock_irqsave(&ioc->FreeQlock, flags);
+ 
+ 	/* Attach the SCSI Host to the IOC structure

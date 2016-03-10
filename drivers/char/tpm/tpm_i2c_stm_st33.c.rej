@@ -1,0 +1,14 @@
+--- drivers/char/tpm/tpm_i2c_stm_st33.c
++++ drivers/char/tpm/tpm_i2c_stm_st33.c
+@@ -485,8 +488,10 @@
+ 
+ 	for (i = 0; i < len - 1;) {
+ 		burstcnt = get_burstcount(chip);
++		if (burstcnt < 0)
++			return burstcnt;
+ 		size = min_t(int, len - i - 1, burstcnt);
+-		ret = I2C_WRITE_DATA(client, TPM_DATA_FIFO, buf, size);
++		ret = I2C_WRITE_DATA(client, TPM_DATA_FIFO, buf + i, size);
+ 		if (ret < 0)
+ 			goto out_err;
+ 

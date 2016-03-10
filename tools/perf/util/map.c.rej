@@ -1,0 +1,10 @@
+--- tools/perf/util/map.c
++++ tools/perf/util/map.c
+@@ -21,6 +21,7 @@
+ static inline int is_anon_memory(const char *filename)
+ {
+ 	return !strcmp(filename, "//anon") ||
++	       !strcmp(filename, "/dev/zero (deleted)") ||
+ 	       !strcmp(filename, "/anon_hugepage (deleted)");
+ }
+ 

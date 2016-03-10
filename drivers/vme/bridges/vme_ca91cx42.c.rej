@@ -1,0 +1,20 @@
+--- drivers/vme/bridges/vme_ca91cx42.c
++++ drivers/vme/bridges/vme_ca91cx42.c
+@@ -880,7 +880,7 @@
+ 		if (done == count)
+ 			goto out;
+ 	}
+-	if ((uintptr_t)addr & 0x2) {
++	if ((uintptr_t)(addr + done) & 0x2) {
+ 		if ((count - done) < 2) {
+ 			*(u8 *)(buf + done) = ioread8(addr + done);
+ 			done += 1;
+@@ -934,7 +934,7 @@
+ 		if (done == count)
+ 			goto out;
+ 	}
+-	if ((uintptr_t)addr & 0x2) {
++	if ((uintptr_t)(addr + done) & 0x2) {
+ 		if ((count - done) < 2) {
+ 			iowrite8(*(u8 *)(buf + done), addr + done);
+ 			done += 1;

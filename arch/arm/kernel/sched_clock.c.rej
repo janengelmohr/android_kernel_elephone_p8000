@@ -1,0 +1,39 @@
+--- arch/arm/kernel/sched_clock.c
++++ arch/arm/kernel/sched_clock.c
+@@ -51,10 +51,11 @@
+ 	return (cyc * mult) >> shift;
+ }
+ 
+-static unsigned long long notrace cyc_to_sched_clock(u32 cyc, u32 mask)
++static unsigned long long notrace sched_clock_32(void)
+ {
+ 	u64 epoch_ns;
+ 	u32 epoch_cyc;
++	u32 cyc;
+ 
+ 	if (cd.suspended)
+ 		return cd.epoch_ns;
+@@ -73,7 +74,9 @@
+ 		smp_rmb();
+ 	} while (epoch_cyc != cd.epoch_cyc_copy);
+ 
+-	return epoch_ns + cyc_to_ns((cyc - epoch_cyc) & mask, cd.mult, cd.shift);
++	cyc = read_sched_clock();
++	cyc = (cyc - epoch_cyc) & sched_clock_mask;
++	return epoch_ns + cyc_to_ns(cyc, cd.mult, cd.shift);
+ }
+ 
+ /*
+@@ -165,12 +168,6 @@
+ 	pr_debug("Registered %pF as sched_clock source\n", read);
+ }
+ 
+-static unsigned long long notrace sched_clock_32(void)
+-{
+-	u32 cyc = read_sched_clock();
+-	return cyc_to_sched_clock(cyc, sched_clock_mask);
+-}
+-
+ unsigned long long __read_mostly (*sched_clock_func)(void) = sched_clock_32;
+ 
+ unsigned long long notrace sched_clock(void)

@@ -1,0 +1,12 @@
+--- drivers/spi/spi-pxa2xx.c
++++ drivers/spi/spi-pxa2xx.c
+@@ -1344,7 +1350,8 @@
+ 	pxa2xx_spi_dma_resume(drv_data);
+ 
+ 	/* Enable the SSP clock */
+-	clk_prepare_enable(ssp->clk);
++	if (!pm_runtime_suspended(dev))
++		clk_prepare_enable(ssp->clk);
+ 
+ 	/* Start the queue running */
+ 	status = spi_master_resume(drv_data->master);

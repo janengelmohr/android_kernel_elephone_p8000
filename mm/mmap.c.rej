@@ -1,0 +1,93 @@
+--- mm/mmap.c
++++ mm/mmap.c
+@@ -865,7 +865,7 @@
+ 		if (next->anon_vma)
+ 			anon_vma_merge(vma, next);
+ 		mm->map_count--;
+-		vma_set_policy(vma, vma_policy(next));
++		mpol_put(vma_policy(next));
+ 		kmem_cache_free(vm_area_cachep, next);
+ 		/*
+ 		 * In mprotect's case 6 (see comments on vma_merge),
+@@ -1853,7 +1853,7 @@
+ 	struct vm_area_struct *vma;
+ 	struct vm_unmapped_area_info info;
+ 
+-	if (len > TASK_SIZE)
++	if (len > TASK_SIZE - mmap_min_addr)
+ 		return -ENOMEM;
+ 
+ 	if (flags & MAP_FIXED)
+@@ -1862,7 +1862,7 @@
+ 	if (addr) {
+ 		addr = PAGE_ALIGN(addr);
+ 		vma = find_vma(mm, addr);
+-		if (TASK_SIZE - len >= addr &&
++		if (TASK_SIZE - len >= addr && addr >= mmap_min_addr &&
+ 		    (!vma || addr + len <= vma->vm_start))
+ 			return addr;
+ 	}
+@@ -1901,7 +1901,7 @@
+ 	struct vm_unmapped_area_info info;
+ 
+ 	/* requested length too big for entire address space */
+-	if (len > TASK_SIZE)
++	if (len > TASK_SIZE - mmap_min_addr)
+ 		return -ENOMEM;
+ 
+ 	if (flags & MAP_FIXED)
+@@ -1911,14 +1911,14 @@
+ 	if (addr) {
+ 		addr = PAGE_ALIGN(addr);
+ 		vma = find_vma(mm, addr);
+-		if (TASK_SIZE - len >= addr &&
++		if (TASK_SIZE - len >= addr && addr >= mmap_min_addr &&
+ 				(!vma || addr + len <= vma->vm_start))
+ 			return addr;
+ 	}
+ 
+ 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
+ 	info.length = len;
+-	info.low_limit = PAGE_SIZE;
++	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
+ 	info.high_limit = mm->mmap_base;
+ 	info.align_mask = 0;
+ 	addr = vm_unmapped_area(&info);
+@@ -2056,14 +2056,17 @@
+ {
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	struct rlimit *rlim = current->signal->rlim;
+-	unsigned long new_start;
++	unsigned long new_start, actual_size;
+ 
+ 	/* address space limit tests */
+ 	if (!may_expand_vm(mm, grow))
+ 		return -ENOMEM;
+ 
+ 	/* Stack limit test */
+-	if (size > ACCESS_ONCE(rlim[RLIMIT_STACK].rlim_cur))
++	actual_size = size;
++	if (size && (vma->vm_flags & (VM_GROWSUP | VM_GROWSDOWN)))
++		actual_size -= PAGE_SIZE;
++	if (actual_size > ACCESS_ONCE(rlim[RLIMIT_STACK].rlim_cur))
+ 		return -ENOMEM;
+ 
+ 	/* mlock limit tests */
+@@ -2356,7 +2359,7 @@
+ 	struct mmu_gather tlb;
+ 
+ 	lru_add_drain();
+-	tlb_gather_mmu(&tlb, mm, 0);
++	tlb_gather_mmu(&tlb, mm, start, end);
+ 	update_hiwater_rss(mm);
+ 	unmap_vmas(&tlb, vma, start, end);
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+@@ -2735,7 +2738,7 @@
+ 
+ 	lru_add_drain();
+ 	flush_cache_mm(mm);
+-	tlb_gather_mmu(&tlb, mm, 1);
++	tlb_gather_mmu(&tlb, mm, 0, -1);
+ 	/* update_hiwater_rss(mm) here? but nobody should be looking */
+ 	/* Use -1 here to ensure all VMAs in the mm are unmapped */
+ 	unmap_vmas(&tlb, vma, 0, -1);

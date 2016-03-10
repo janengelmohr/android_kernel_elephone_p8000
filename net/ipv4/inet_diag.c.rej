@@ -1,0 +1,56 @@
+--- net/ipv4/inet_diag.c
++++ net/ipv4/inet_diag.c
+@@ -120,6 +134,10 @@
+ 
+ 	r->id.idiag_sport = inet->inet_sport;
+ 	r->id.idiag_dport = inet->inet_dport;
++
++	memset(&r->id.idiag_src, 0, sizeof(r->id.idiag_src));
++	memset(&r->id.idiag_dst, 0, sizeof(r->id.idiag_dst));
++
+ 	r->id.idiag_src[0] = inet->inet_rcv_saddr;
+ 	r->id.idiag_dst[0] = inet->inet_daddr;
+ 
+@@ -254,12 +272,19 @@
+ 
+ 	r->idiag_family	      = tw->tw_family;
+ 	r->idiag_retrans      = 0;
++
+ 	r->id.idiag_if	      = tw->tw_bound_dev_if;
+ 	sock_diag_save_cookie(tw, r->id.idiag_cookie);
++
+ 	r->id.idiag_sport     = tw->tw_sport;
+ 	r->id.idiag_dport     = tw->tw_dport;
++
++	memset(&r->id.idiag_src, 0, sizeof(r->id.idiag_src));
++	memset(&r->id.idiag_dst, 0, sizeof(r->id.idiag_dst));
++
+ 	r->id.idiag_src[0]    = tw->tw_rcv_saddr;
+ 	r->id.idiag_dst[0]    = tw->tw_daddr;
++
+ 	r->idiag_state	      = tw->tw_substate;
+ 	r->idiag_timer	      = 3;
+ 	r->idiag_expires      = DIV_ROUND_UP(tmo * 1000, HZ);
+@@ -744,8 +767,13 @@
+ 
+ 	r->id.idiag_sport = inet->inet_sport;
+ 	r->id.idiag_dport = ireq->rmt_port;
++
++	memset(&r->id.idiag_src, 0, sizeof(r->id.idiag_src));
++	memset(&r->id.idiag_dst, 0, sizeof(r->id.idiag_dst));
++
+ 	r->id.idiag_src[0] = ireq->loc_addr;
+ 	r->id.idiag_dst[0] = ireq->rmt_addr;
++
+ 	r->idiag_expires = jiffies_to_msecs(tmo);
+ 	r->idiag_rqueue = 0;
+ 	r->idiag_wqueue = 0;
+@@ -957,7 +985,7 @@
+ 			++num;
+ 		}
+ 
+-		if (r->idiag_states & TCPF_TIME_WAIT) {
++		if (r->idiag_states & (TCPF_TIME_WAIT | TCPF_FIN_WAIT2)) {
+ 			struct inet_timewait_sock *tw;
+ 
+ 			inet_twsk_for_each(tw, node,

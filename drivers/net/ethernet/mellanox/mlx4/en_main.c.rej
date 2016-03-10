@@ -1,0 +1,24 @@
+--- drivers/net/ethernet/mellanox/mlx4/en_main.c
++++ drivers/net/ethernet/mellanox/mlx4/en_main.c
+@@ -264,6 +264,10 @@
+ 	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_ETH)
+ 		mdev->port_cnt++;
+ 
++	/* Initialize time stamp mechanism */
++	if (mdev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_TS)
++		mlx4_en_init_timestamp(mdev);
++
+ 	mlx4_foreach_port(i, dev, MLX4_PORT_TYPE_ETH) {
+ 		if (!dev->caps.comp_pool) {
+ 			mdev->profile.prof[i].rx_ring_num =
+@@ -301,10 +305,6 @@
+ 			mdev->pndev[i] = NULL;
+ 	}
+ 
+-	/* Initialize time stamp mechanism */
+-	if (mdev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_TS)
+-		mlx4_en_init_timestamp(mdev);
+-
+ 	return mdev;
+ 
+ err_mr:

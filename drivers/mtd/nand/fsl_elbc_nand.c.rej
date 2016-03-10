@@ -1,0 +1,10 @@
+--- drivers/mtd/nand/fsl_elbc_nand.c
++++ drivers/mtd/nand/fsl_elbc_nand.c
+@@ -776,6 +789,7 @@
+ 
+ 	chip->ecc.read_page = fsl_elbc_read_page;
+ 	chip->ecc.write_page = fsl_elbc_write_page;
++	chip->ecc.write_subpage = fsl_elbc_write_subpage;
+ 
+ 	/* If CS Base Register selects full hardware ECC then use it */
+ 	if ((in_be32(&lbc->bank[priv->bank].br) & BR_DECC) ==

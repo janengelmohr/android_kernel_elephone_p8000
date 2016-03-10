@@ -1,0 +1,70 @@
+--- lib/genalloc.c
++++ lib/genalloc.c
+@@ -37,6 +37,11 @@
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
+ 
++static inline size_t chunk_size(const struct gen_pool_chunk *chunk)
++{
++	return chunk->end_addr - chunk->start_addr + 1;
++}
++
+ static int set_bits_ll(unsigned long *addr, unsigned long mask_to_set)
+ {
+ 	unsigned long val, nval;
+@@ -188,7 +193,7 @@
+ 
+ 	chunk->phys_addr = phys;
+ 	chunk->start_addr = virt;
+-	chunk->end_addr = virt + size;
++	chunk->end_addr = virt + size - 1;
+ 	atomic_set(&chunk->avail, size);
+ 
+ 	spin_lock(&pool->lock);
+@@ -213,7 +218,7 @@
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(chunk, &pool->chunks, next_chunk) {
+-		if (addr >= chunk->start_addr && addr < chunk->end_addr) {
++		if (addr >= chunk->start_addr && addr <= chunk->end_addr) {
+ 			paddr = chunk->phys_addr + (addr - chunk->start_addr);
+ 			break;
+ 		}
+@@ -242,7 +247,7 @@
+ 		chunk = list_entry(_chunk, struct gen_pool_chunk, next_chunk);
+ 		list_del(&chunk->next_chunk);
+ 
+-		end_bit = (chunk->end_addr - chunk->start_addr) >> order;
++		end_bit = chunk_size(chunk) >> order;
+ 		bit = find_next_bit(chunk->bits, end_bit, 0);
+ 		BUG_ON(bit < end_bit);
+ 
+@@ -283,7 +288,7 @@
+ 		if (size > atomic_read(&chunk->avail))
+ 			continue;
+ 
+-		end_bit = (chunk->end_addr - chunk->start_addr) >> order;
++		end_bit = chunk_size(chunk) >> order;
+ retry:
+ 		start_bit = pool->algo(chunk->bits, end_bit, start_bit, nbits,
+ 				pool->data);
+@@ -330,8 +335,8 @@
+ 	nbits = (size + (1UL << order) - 1) >> order;
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(chunk, &pool->chunks, next_chunk) {
+-		if (addr >= chunk->start_addr && addr < chunk->end_addr) {
+-			BUG_ON(addr + size > chunk->end_addr);
++		if (addr >= chunk->start_addr && addr <= chunk->end_addr) {
++			BUG_ON(addr + size - 1 > chunk->end_addr);
+ 			start_bit = (addr - chunk->start_addr) >> order;
+ 			remain = bitmap_clear_ll(chunk->bits, start_bit, nbits);
+ 			BUG_ON(remain);
+@@ -400,7 +405,7 @@
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(chunk, &pool->chunks, next_chunk)
+-		size += chunk->end_addr - chunk->start_addr;
++		size += chunk_size(chunk);
+ 	rcu_read_unlock();
+ 	return size;
+ }

@@ -1,0 +1,11 @@
+--- arch/x86/include/asm/kvm_host.h
++++ arch/x86/include/asm/kvm_host.h
+@@ -540,7 +539,7 @@
+ 	struct kvm_pic *vpic;
+ 	struct kvm_ioapic *vioapic;
+ 	struct kvm_pit *vpit;
+-	atomic_t vapics_in_nmi_mode;
++	int vapics_in_nmi_mode;
+ 	struct mutex apic_map_lock;
+ 	struct kvm_apic_map *apic_map;
+ 

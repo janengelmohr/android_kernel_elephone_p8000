@@ -1,0 +1,28 @@
+--- net/batman-adv/main.c
++++ net/batman-adv/main.c
+@@ -61,6 +61,7 @@
+ 	batadv_recv_handler_init();
+ 
+ 	batadv_iv_init();
++	batadv_nc_init();
+ 
+ 	batadv_event_workqueue = create_singlethread_workqueue("bat_events");
+ 
+@@ -138,7 +139,7 @@
+ 	if (ret < 0)
+ 		goto err;
+ 
+-	ret = batadv_nc_init(bat_priv);
++	ret = batadv_nc_mesh_init(bat_priv);
+ 	if (ret < 0)
+ 		goto err;
+ 
+@@ -163,7 +164,7 @@
+ 	batadv_vis_quit(bat_priv);
+ 
+ 	batadv_gw_node_purge(bat_priv);
+-	batadv_nc_free(bat_priv);
++	batadv_nc_mesh_free(bat_priv);
+ 	batadv_dat_free(bat_priv);
+ 	batadv_bla_free(bat_priv);
+ 

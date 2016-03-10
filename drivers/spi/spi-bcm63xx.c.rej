@@ -1,0 +1,11 @@
+--- drivers/spi/spi-bcm63xx.c
++++ drivers/spi/spi-bcm63xx.c
+@@ -180,8 +180,6 @@
+ 			       transfer_list);
+ 	}
+ 
+-	len -= prepend_len;
+-
+ 	init_completion(&bs->done);
+ 
+ 	/* Fill in the Message control register */

@@ -1,0 +1,18 @@
+--- net/compat.c
++++ net/compat.c
+@@ -71,6 +71,15 @@
+ 	    __get_user(kmsg->msg_controllen, &umsg->msg_controllen) ||
+ 	    __get_user(kmsg->msg_flags, &umsg->msg_flags))
+ 		return -EFAULT;
++
++	if (!tmp1)
++		kmsg->msg_namelen = 0;
++
++	if (kmsg->msg_namelen < 0)
++		return -EINVAL;
++
++	if (kmsg->msg_namelen > sizeof(struct sockaddr_storage))
++		kmsg->msg_namelen = sizeof(struct sockaddr_storage);
+ 	kmsg->msg_name = compat_ptr(tmp1);
+ 	kmsg->msg_iov = compat_ptr(tmp2);
+ 	kmsg->msg_control = compat_ptr(tmp3);

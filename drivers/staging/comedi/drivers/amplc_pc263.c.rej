@@ -1,0 +1,12 @@
+--- drivers/staging/comedi/drivers/amplc_pc263.c
++++ drivers/staging/comedi/drivers/amplc_pc263.c
+@@ -72,6 +72,9 @@
+ 		outb(s->state & 0xFF, dev->iobase);
+ 		outb(s->state >> 8, dev->iobase + 1);
+ 	}
++
++	data[1] = s->state;
++
+ 	return insn->n;
+ }
+ 

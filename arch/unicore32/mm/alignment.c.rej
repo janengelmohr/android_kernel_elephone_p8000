@@ -1,0 +1,10 @@
+--- arch/unicore32/mm/alignment.c
++++ arch/unicore32/mm/alignment.c
+@@ -21,6 +21,7 @@
+ #include <linux/sched.h>
+ #include <linux/uaccess.h>
+ 
++#include <asm/pgtable.h>
+ #include <asm/tlbflush.h>
+ #include <asm/unaligned.h>
+ 

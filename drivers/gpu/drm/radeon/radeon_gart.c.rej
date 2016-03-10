@@ -1,0 +1,19 @@
+--- drivers/gpu/drm/radeon/radeon_gart.c
++++ drivers/gpu/drm/radeon/radeon_gart.c
+@@ -471,6 +475,7 @@
+ 		size *= 2;
+ 		r = radeon_sa_bo_manager_init(rdev, &rdev->vm_manager.sa_manager,
+ 					      RADEON_GPU_PAGE_ALIGN(size),
++					      RADEON_GPU_PAGE_SIZE,
+ 					      RADEON_GEM_DOMAIN_VRAM);
+ 		if (r) {
+ 			dev_err(rdev->dev, "failed to allocate vm bo (%dKB)\n",
+@@ -1160,6 +1165,8 @@
+ 		return -ENOMEM;
+ 
+ 	r = radeon_ib_get(rdev, ridx, &ib, NULL, ndw * 4);
++	if (r)
++		return r;
+ 	ib.length_dw = 0;
+ 
+ 	r = radeon_vm_update_pdes(rdev, vm, &ib, bo_va->soffset, bo_va->eoffset);

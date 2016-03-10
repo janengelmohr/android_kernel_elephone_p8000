@@ -1,0 +1,10 @@
+--- arch/arm/mach-at91/clock.c
++++ arch/arm/mach-at91/clock.c
+@@ -947,6 +947,7 @@
+ 	}
+ 
+ 	at91_pmc_write(AT91_PMC_SCDR, scdr);
++	at91_pmc_write(AT91_PMC_PCDR, pcdr);
+ 	if (cpu_is_sama5d3())
+ 		at91_pmc_write(AT91_PMC_PCDR1, pcdr1);
+ 

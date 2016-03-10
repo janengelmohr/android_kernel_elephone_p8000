@@ -1,0 +1,20 @@
+--- drivers/net/ethernet/intel/igb/igb_main.c
++++ drivers/net/ethernet/intel/igb/igb_main.c
+@@ -1584,6 +1584,8 @@
+ 		igb_power_up_phy_copper(&adapter->hw);
+ 	else
+ 		igb_power_up_serdes_link_82575(&adapter->hw);
++
++	igb_setup_link(&adapter->hw);
+ }
+ 
+ /**
+@@ -7229,6 +7231,8 @@
+ 
+ 	if (netif_running(netdev))
+ 		igb_close(netdev);
++	else
++		igb_reset(adapter);
+ 
+ 	igb_clear_interrupt_scheme(adapter);
+ 

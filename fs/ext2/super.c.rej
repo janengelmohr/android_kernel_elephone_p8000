@@ -1,0 +1,10 @@
+--- fs/ext2/super.c
++++ fs/ext2/super.c
+@@ -1493,6 +1493,7 @@
+ 				sb->s_blocksize - offset : towrite;
+ 
+ 		tmp_bh.b_state = 0;
++		tmp_bh.b_size = sb->s_blocksize;
+ 		err = ext2_get_block(inode, blk, &tmp_bh, 1);
+ 		if (err < 0)
+ 			goto out;

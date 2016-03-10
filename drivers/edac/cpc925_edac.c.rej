@@ -1,0 +1,11 @@
+--- drivers/edac/cpc925_edac.c
++++ drivers/edac/cpc925_edac.c
+@@ -562,7 +562,7 @@
+ 
+ 	if (apiexcp & UECC_EXCP_DETECTED) {
+ 		cpc925_mc_printk(mci, KERN_INFO, "DRAM UECC Fault\n");
+-		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
++		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
+ 				     pfn, offset, 0,
+ 				     csrow, -1, -1,
+ 				     mci->ctl_name, "");

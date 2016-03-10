@@ -1,0 +1,11 @@
+--- net/ipv4/icmp.c
++++ net/ipv4/icmp.c
+@@ -697,8 +697,6 @@
+ 					       &iph->daddr);
+ 			} else {
+ 				info = ntohs(icmph->un.frag.mtu);
+-				if (!info)
+-					goto out;
+ 			}
+ 			break;
+ 		case ICMP_SR_FAILED:

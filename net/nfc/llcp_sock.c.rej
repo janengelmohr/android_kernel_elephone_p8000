@@ -1,0 +1,39 @@
+--- net/nfc/llcp_sock.c
++++ net/nfc/llcp_sock.c
+@@ -571,7 +571,7 @@
+ 	if (sk->sk_shutdown == SHUTDOWN_MASK)
+ 		mask |= POLLHUP;
+ 
+-	if (sock_writeable(sk))
++	if (sock_writeable(sk) && sk->sk_state == LLCP_CONNECTED)
+ 		mask |= POLLOUT | POLLWRNORM | POLLWRBAND;
+ 	else
+ 		set_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
+@@ -722,14 +722,16 @@
+ 	if (ret)
+ 		goto sock_unlink;
+ 
++	sk->sk_state = LLCP_CONNECTING;
++
+ 	ret = sock_wait_state(sk, LLCP_CONNECTED,
+ 			      sock_sndtimeo(sk, flags & O_NONBLOCK));
+-	if (ret)
++	if (ret && ret != -EINPROGRESS)
+ 		goto sock_unlink;
+ 
+ 	release_sock(sk);
+ 
+-	return 0;
++	return ret;
+ 
+ sock_unlink:
+ 	nfc_llcp_put_ssap(local, llcp_sock->ssap);
+@@ -798,8 +800,6 @@
+ 
+ 	pr_debug("%p %zu\n", sk, len);
+ 
+-	msg->msg_namelen = 0;
+-
+ 	lock_sock(sk);
+ 
+ 	if (sk->sk_state == LLCP_CLOSED &&

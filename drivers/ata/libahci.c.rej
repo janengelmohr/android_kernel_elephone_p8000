@@ -1,0 +1,24 @@
+--- drivers/ata/libahci.c
++++ drivers/ata/libahci.c
+@@ -1275,9 +1284,11 @@
+ {
+ 	struct ata_port *ap = link->ap;
+ 	struct ahci_host_priv *hpriv = ap->host->private_data;
++	struct ahci_port_priv *pp = ap->private_data;
+ 	const char *reason = NULL;
+ 	unsigned long now, msecs;
+ 	struct ata_taskfile tf;
++	bool fbs_disabled = false;
+ 	int rc;
+ 
+ 	DPRINTK("ENTER\n");
+@@ -1583,8 +1608,7 @@
+ 		u32 fbs = readl(port_mmio + PORT_FBS);
+ 		int pmp = fbs >> PORT_FBS_DWE_OFFSET;
+ 
+-		if ((fbs & PORT_FBS_SDE) && (pmp < ap->nr_pmp_links) &&
+-		    ata_link_online(&ap->pmp_link[pmp])) {
++		if ((fbs & PORT_FBS_SDE) && (pmp < ap->nr_pmp_links)) {
+ 			link = &ap->pmp_link[pmp];
+ 			fbs_need_dec = true;
+ 		}

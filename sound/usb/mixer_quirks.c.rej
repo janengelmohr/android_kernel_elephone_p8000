@@ -1,0 +1,10 @@
+--- sound/usb/mixer_quirks.c
++++ sound/usb/mixer_quirks.c
+@@ -839,6 +845,7 @@
+ 		return -ENOMEM;
+ 	}
+ 
++	kctl->private_free = kctl_private_value_free;
+ 	err = snd_ctl_add(mixer->chip->card, kctl);
+ 	if (err < 0)
+ 		return err;

@@ -1,0 +1,11 @@
+--- drivers/media/usb/em28xx/em28xx-i2c.c
++++ drivers/media/usb/em28xx/em28xx-i2c.c
+@@ -726,7 +726,7 @@
+ 
+ 	*eedata = data;
+ 	*eedata_len = len;
+-	dev_config = (void *)eedata;
++	dev_config = (void *)*eedata;
+ 
+ 	switch (le16_to_cpu(dev_config->chip_conf) >> 4 & 0x3) {
+ 	case 0:

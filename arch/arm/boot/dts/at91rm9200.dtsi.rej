@@ -1,0 +1,16 @@
+--- arch/arm/boot/dts/at91rm9200.dtsi
++++ arch/arm/boot/dts/at91rm9200.dtsi
+@@ -35,8 +35,12 @@
+ 		ssc2 = &ssc2;
+ 	};
+ 	cpus {
+-		cpu@0 {
++		#address-cells = <0>;
++		#size-cells = <0>;
++
++		cpu {
+ 			compatible = "arm,arm920t";
++			device_type = "cpu";
+ 		};
+ 	};
+ 

@@ -1,0 +1,18 @@
+--- drivers/acpi/acpica/dsfield.c
++++ drivers/acpi/acpica/dsfield.c
+@@ -360,6 +360,7 @@
+ 			 */
+ 			info->resource_buffer = NULL;
+ 			info->connection_node = NULL;
++			info->pin_number_index = 0;
+ 
+ 			/*
+ 			 * A Connection() is either an actual resource descriptor (buffer)
+@@ -437,6 +438,7 @@
+ 			}
+ 
+ 			info->field_bit_position += info->field_bit_length;
++			info->pin_number_index++;	/* Index relative to previous Connection() */
+ 			break;
+ 
+ 		default:

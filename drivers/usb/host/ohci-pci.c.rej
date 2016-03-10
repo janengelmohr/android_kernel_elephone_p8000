@@ -1,0 +1,19 @@
+--- drivers/usb/host/ohci-pci.c
++++ drivers/usb/host/ohci-pci.c
+@@ -172,6 +172,7 @@
+ 	pci_dev_put(amd_smbus_dev);
+ 	amd_smbus_dev = NULL;
+ 
++	ohci->flags |= OHCI_QUIRK_GLOBAL_SUSPEND;
+ 	return 0;
+ }
+ 
+@@ -371,7 +372,7 @@
+ 	.remove =	usb_hcd_pci_remove,
+ 	.shutdown =	usb_hcd_pci_shutdown,
+ 
+-#ifdef CONFIG_PM_SLEEP
++#ifdef CONFIG_PM
+ 	.driver =	{
+ 		.pm =	&usb_hcd_pci_pm_ops
+ 	},

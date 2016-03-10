@@ -1,0 +1,10 @@
+--- lib/btree.c
++++ lib/btree.c
+@@ -198,6 +198,7 @@
+ 
+ void btree_destroy(struct btree_head *head)
+ {
++	mempool_free(head->node, head->mempool);
+ 	mempool_destroy(head->mempool);
+ 	head->mempool = NULL;
+ }

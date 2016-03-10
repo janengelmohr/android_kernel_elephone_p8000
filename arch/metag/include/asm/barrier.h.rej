@@ -1,0 +1,26 @@
+--- arch/metag/include/asm/barrier.h
++++ arch/metag/include/asm/barrier.h
+@@ -15,6 +15,7 @@
+ 	volatile int *flushptr = (volatile int *) LINSYSEVENT_WR_FENCE;
+ 	barrier();
+ 	*flushptr = 0;
++	barrier();
+ }
+ 
+ #else /* CONFIG_METAG_META21 */
+@@ -35,6 +36,7 @@
+ 	*flushptr = 0;
+ 	*flushptr = 0;
+ 	*flushptr = 0;
++	barrier();
+ }
+ 
+ #endif /* !CONFIG_METAG_META21 */
+@@ -68,6 +70,7 @@
+ 	volatile int *flushptr = (volatile int *) LINSYSEVENT_WR_ATOMIC_UNLOCK;
+ 	barrier();
+ 	*flushptr = 0;
++	barrier();
+ }
+ #define smp_mb()        fence()
+ #define smp_rmb()       fence()

@@ -1,0 +1,11 @@
+--- kernel/uid16.c
++++ kernel/uid16.c
+@@ -176,7 +176,7 @@
+ 	struct group_info *group_info;
+ 	int retval;
+ 
+-	if (!nsown_capable(CAP_SETGID))
++	if (!may_setgroups())
+ 		return -EPERM;
+ 	if ((unsigned)gidsetsize > NGROUPS_MAX)
+ 		return -EINVAL;

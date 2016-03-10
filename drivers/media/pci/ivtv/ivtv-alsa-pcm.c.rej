@@ -1,0 +1,15 @@
+--- drivers/media/pci/ivtv/ivtv-alsa-pcm.c
++++ drivers/media/pci/ivtv/ivtv-alsa-pcm.c
+@@ -159,6 +159,12 @@
+ 
+ 	/* Instruct the CX2341[56] to start sending packets */
+ 	snd_ivtv_lock(itvsc);
++
++	if (ivtv_init_on_first_open(itv)) {
++		snd_ivtv_unlock(itvsc);
++		return -ENXIO;
++	}
++
+ 	s = &itv->streams[IVTV_ENC_STREAM_TYPE_PCM];
+ 
+ 	v4l2_fh_init(&item.fh, s->vdev);

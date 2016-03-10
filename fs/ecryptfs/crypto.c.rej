@@ -1,0 +1,10 @@
+--- fs/ecryptfs/crypto.c
++++ fs/ecryptfs/crypto.c
+@@ -2102,7 +2102,6 @@
+ 			break;
+ 		case 2:
+ 			dst[dst_byte_offset++] |= (src_byte);
+-			dst[dst_byte_offset] = 0;
+ 			current_bit_offset = 0;
+ 			break;
+ 		}

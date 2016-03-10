@@ -1,0 +1,11 @@
+--- crypto/crypto_wq.c
++++ crypto/crypto_wq.c
+@@ -33,7 +33,7 @@
+ 	destroy_workqueue(kcrypto_wq);
+ }
+ 
+-module_init(crypto_wq_init);
++subsys_initcall(crypto_wq_init);
+ module_exit(crypto_wq_exit);
+ 
+ MODULE_LICENSE("GPL");

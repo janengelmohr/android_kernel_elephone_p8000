@@ -1,0 +1,10 @@
+--- drivers/net/wireless/ath/carl9170/carl9170.h
++++ drivers/net/wireless/ath/carl9170/carl9170.h
+@@ -253,6 +253,7 @@
+ 	atomic_t rx_work_urbs;
+ 	atomic_t rx_pool_urbs;
+ 	kernel_ulong_t features;
++	bool usb_ep_cmd_is_bulk;
+ 
+ 	/* firmware settings */
+ 	struct completion fw_load_wait;

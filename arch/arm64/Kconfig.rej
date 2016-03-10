@@ -1,0 +1,13 @@
+--- arch/arm64/Kconfig
++++ arch/arm64/Kconfig
+@@ -55,10 +54,6 @@
+ config STACKTRACE_SUPPORT
+ 	def_bool y
+ 
+-config ILLEGAL_POINTER_VALUE
+-	hex
+-	default 0xdead000000000000
+-
+ config LOCKDEP_SUPPORT
+ 	def_bool y
+ 

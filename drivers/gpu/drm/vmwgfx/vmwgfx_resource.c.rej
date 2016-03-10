@@ -1,0 +1,11 @@
+--- drivers/gpu/drm/vmwgfx/vmwgfx_resource.c
++++ drivers/gpu/drm/vmwgfx/vmwgfx_resource.c
+@@ -970,7 +970,7 @@
+ 	if (new_backup)
+ 		res->backup_offset = new_backup_offset;
+ 
+-	if (!res->func->may_evict)
++	if (!res->func->may_evict || res->id == -1)
+ 		return;
+ 
+ 	write_lock(&dev_priv->resource_lock);

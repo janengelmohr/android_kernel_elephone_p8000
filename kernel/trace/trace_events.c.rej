@@ -1,0 +1,61 @@
+--- kernel/trace/trace_events.c
++++ kernel/trace/trace_events.c
+@@ -401,17 +409,55 @@
+ 	mutex_unlock(&event_mutex);
+ }
+ 
++static void remove_subsystem(struct ftrace_subsystem_dir *dir)
++{
++	if (!dir)
++		return;
++
++	if (!--dir->nr_events) {
++		debugfs_remove_recursive(dir->entry);
++		list_del(&dir->list);
++		__put_system_dir(dir);
++	}
++}
++
++static void *event_file_data(struct file *filp)
++{
++	return ACCESS_ONCE(file_inode(filp)->i_private);
++}
++
++static void remove_event_file_dir(struct ftrace_event_file *file)
++{
++	struct dentry *dir = file->dir;
++	struct dentry *child;
++
++	if (dir) {
++		spin_lock(&dir->d_lock);	/* probably unneeded */
++		list_for_each_entry(child, &dir->d_subdirs, d_child) {
++			if (child->d_inode)	/* probably unneeded */
++				child->d_inode->i_private = NULL;
++		}
++		spin_unlock(&dir->d_lock);
++
++		debugfs_remove_recursive(dir);
++	}
++
++	list_del(&file->list);
++	remove_subsystem(file->system);
++	kmem_cache_free(file_cachep, file);
++}
++
+ /*
+  * __ftrace_set_clr_event(NULL, NULL, NULL, set) will set/unset all events.
+  */
+-static int __ftrace_set_clr_event(struct trace_array *tr, const char *match,
+-				  const char *sub, const char *event, int set)
++static int
++__ftrace_set_clr_event_nolock(struct trace_array *tr, const char *match,
++			      const char *sub, const char *event, int set)
+ {
+ 	struct ftrace_event_file *file;
+ 	struct ftrace_event_call *call;
+ 	int ret = -EINVAL;
+ 
+-	mutex_lock(&event_mutex);
+ 	list_for_each_entry(file, &tr->events, list) {
+ 
+ 		call = file->event_call;

@@ -1,0 +1,10 @@
+--- drivers/media/tuners/fc2580_priv.h
++++ drivers/media/tuners/fc2580_priv.h
+@@ -22,6 +22,7 @@
+ #define FC2580_PRIV_H
+ 
+ #include "fc2580.h"
++#include <linux/math64.h>
+ 
+ struct fc2580_reg_val {
+ 	u8 reg;

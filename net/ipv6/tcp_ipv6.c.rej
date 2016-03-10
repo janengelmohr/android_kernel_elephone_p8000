@@ -1,0 +1,11 @@
+--- net/ipv6/tcp_ipv6.c
++++ net/ipv6/tcp_ipv6.c
+@@ -1616,7 +1616,7 @@
+ 		skb->sk = sk;
+ 		skb->destructor = sock_edemux;
+ 		if (sk->sk_state != TCP_TIME_WAIT) {
+-			struct dst_entry *dst = ACCESS_ONCE(sk->sk_rx_dst);
++			struct dst_entry *dst = sk->sk_rx_dst;
+ 
+ 			if (dst)
+ 				dst = dst_check(dst, inet6_sk(sk)->rx_dst_cookie);

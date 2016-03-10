@@ -1,0 +1,34 @@
+--- arch/arc/kernel/signal.c
++++ arch/arc/kernel/signal.c
+@@ -118,18 +117,28 @@
+ 	if (!access_ok(VERIFY_READ, sf, sizeof(*sf)))
+ 		goto badframe;
+ 
+-	err = restore_usr_regs(regs, sf);
+-	err |= __get_user(magic, &sf->sigret_magic);
+-	if (err)
++	if (__get_user(magic, &sf->sigret_magic))
+ 		goto badframe;
+ 
+ 	if (unlikely(is_do_ss_needed(magic)))
+ 		if (restore_altstack(&sf->uc.uc_stack))
+ 			goto badframe;
+ 
++	if (restore_usr_regs(regs, sf))
++		goto badframe;
++
+ 	/* Don't restart from sigreturn */
+ 	syscall_wont_restart(regs);
+ 
++	/*
++	 * Ensure that sigreturn always returns to user mode (in case the
++	 * regs saved on user stack got fudged between save and sigreturn)
++	 * Otherwise it is easy to panic the kernel with a custom
++	 * signal handler and/or restorer which clobberes the status32/ret
++	 * to return to a bogus location in kernel mode.
++	 */
++	regs->status32 |= STATUS_U_MASK;
++
+ 	return regs->r0;
+ 
+ badframe:

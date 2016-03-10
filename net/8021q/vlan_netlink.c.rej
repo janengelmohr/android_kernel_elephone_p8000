@@ -1,0 +1,11 @@
+--- net/8021q/vlan_netlink.c
++++ net/8021q/vlan_netlink.c
+@@ -171,7 +171,7 @@
+ 
+ 	return nla_total_size(2) +	/* IFLA_VLAN_PROTOCOL */
+ 	       nla_total_size(2) +	/* IFLA_VLAN_ID */
+-	       sizeof(struct ifla_vlan_flags) + /* IFLA_VLAN_FLAGS */
++	       nla_total_size(sizeof(struct ifla_vlan_flags)) + /* IFLA_VLAN_FLAGS */
+ 	       vlan_qos_map_size(vlan->nr_ingress_mappings) +
+ 	       vlan_qos_map_size(vlan->nr_egress_mappings);
+ }

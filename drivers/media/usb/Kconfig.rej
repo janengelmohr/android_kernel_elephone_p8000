@@ -1,0 +1,16 @@
+--- drivers/media/usb/Kconfig
++++ drivers/media/usb/Kconfig
+@@ -1,6 +1,7 @@
++if USB && MEDIA_SUPPORT
++
+ menuconfig MEDIA_USB_SUPPORT
+ 	bool "Media USB Adapters"
+-	depends on USB && MEDIA_SUPPORT
+ 	help
+ 	  Enable media drivers for USB bus.
+ 	  If you have such devices, say Y.
+@@ -52,3 +53,4 @@
+ endif
+ 
+ endif #MEDIA_USB_SUPPORT
++endif #USB

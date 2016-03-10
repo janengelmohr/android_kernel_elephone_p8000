@@ -1,0 +1,23 @@
+--- drivers/usb/gadget/udc-core.c
++++ drivers/usb/gadget/udc-core.c
+@@ -105,7 +105,7 @@
+ 		enum usb_device_state state)
+ {
+ 	gadget->state = state;
+-	sysfs_notify(&gadget->dev.kobj, NULL, "status");
++	sysfs_notify(&gadget->dev.kobj, NULL, "state");
+ }
+ EXPORT_SYMBOL_GPL(usb_gadget_set_state);
+ 
+@@ -439,6 +439,11 @@
+ {
+ 	struct usb_udc		*udc = container_of(dev, struct usb_udc, dev);
+ 
++	if (!udc->driver) {
++		dev_err(dev, "soft-connect without a gadget driver\n");
++		return -EOPNOTSUPP;
++	}
++
+ 	if (sysfs_streq(buf, "connect")) {
+ 		usb_gadget_udc_start(udc->gadget, udc->driver);
+ 		usb_gadget_connect(udc->gadget);

@@ -1,0 +1,11 @@
+--- arch/powerpc/perf/callchain.c
++++ arch/powerpc/perf/callchain.c
+@@ -243,7 +243,7 @@
+ 	sp = regs->gpr[1];
+ 	perf_callchain_store(entry, next_ip);
+ 
+-	while (entry->nr < PERF_MAX_STACK_DEPTH) {
++	for (;;) {
+ 		fp = (unsigned long __user *) sp;
+ 		if (!valid_user_sp(sp, 1) || read_user_stack_64(fp, &next_sp))
+ 			return;

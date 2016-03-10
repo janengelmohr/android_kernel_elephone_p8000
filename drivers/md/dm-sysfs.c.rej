@@ -1,0 +1,19 @@
+--- drivers/md/dm-sysfs.c
++++ drivers/md/dm-sysfs.c
+@@ -86,6 +86,7 @@
+ static struct kobj_type dm_ktype = {
+ 	.sysfs_ops	= &dm_sysfs_ops,
+ 	.default_attrs	= dm_attrs,
++	.release	= dm_kobject_release,
+ };
+ 
+ /*
+@@ -104,5 +105,7 @@
+  */
+ void dm_sysfs_exit(struct mapped_device *md)
+ {
+-	kobject_put(dm_kobject(md));
++	struct kobject *kobj = dm_kobject(md);
++	kobject_put(kobj);
++	wait_for_completion(dm_get_completion_from_kobject(kobj));
+ }

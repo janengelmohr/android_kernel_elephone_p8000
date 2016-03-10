@@ -1,0 +1,15 @@
+--- sound/soc/codecs/wm8960.c
++++ sound/soc/codecs/wm8960.c
+@@ -857,9 +857,9 @@
+ 	if (pll_div.k) {
+ 		reg |= 0x20;
+ 
+-		snd_soc_write(codec, WM8960_PLL2, (pll_div.k >> 18) & 0x3f);
+-		snd_soc_write(codec, WM8960_PLL3, (pll_div.k >> 9) & 0x1ff);
+-		snd_soc_write(codec, WM8960_PLL4, pll_div.k & 0x1ff);
++		snd_soc_write(codec, WM8960_PLL2, (pll_div.k >> 16) & 0xff);
++		snd_soc_write(codec, WM8960_PLL3, (pll_div.k >> 8) & 0xff);
++		snd_soc_write(codec, WM8960_PLL4, pll_div.k & 0xff);
+ 	}
+ 	snd_soc_write(codec, WM8960_PLL1, reg);
+ 

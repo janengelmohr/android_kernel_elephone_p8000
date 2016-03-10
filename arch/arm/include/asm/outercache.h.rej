@@ -1,0 +1,15 @@
+--- arch/arm/include/asm/outercache.h
++++ arch/arm/include/asm/outercache.h
+@@ -37,10 +37,10 @@
+ 	void (*resume)(void);
+ };
+ 
+-#ifdef CONFIG_OUTER_CACHE
+-
+ extern struct outer_cache_fns outer_cache;
+ 
++#ifdef CONFIG_OUTER_CACHE
++
+ static inline void outer_inv_range(phys_addr_t start, phys_addr_t end)
+ {
+ 	if (outer_cache.inv_range)

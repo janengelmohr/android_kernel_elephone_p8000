@@ -1,0 +1,11 @@
+--- drivers/mfd/omap-usb-host.c
++++ drivers/mfd/omap-usb-host.c
+@@ -445,7 +445,7 @@
+ 
+ 		for (i = 0; i < omap->nports; i++) {
+ 			if (is_ehci_phy_mode(pdata->port_mode[i])) {
+-				reg &= OMAP_UHH_HOSTCONFIG_ULPI_BYPASS;
++				reg &= ~OMAP_UHH_HOSTCONFIG_ULPI_BYPASS;
+ 				break;
+ 			}
+ 		}

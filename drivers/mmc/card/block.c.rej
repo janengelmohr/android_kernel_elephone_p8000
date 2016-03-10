@@ -1,0 +1,87 @@
+--- drivers/mmc/card/block.c
++++ drivers/mmc/card/block.c
+@@ -258,7 +259,7 @@
+ 	int ret;
+ 	struct mmc_blk_data *md = mmc_blk_get(dev_to_disk(dev));
+ 
+-	ret = snprintf(buf, PAGE_SIZE, "%d",
++	ret = snprintf(buf, PAGE_SIZE, "%d\n",
+ 		       get_disk_ro(dev_to_disk(dev)) ^
+ 		       md->read_only);
+ 	mmc_blk_put(md);
+@@ -770,7 +771,7 @@
+  * Otherwise we don't understand what happened, so abort.
+  */
+ static int mmc_blk_cmd_recovery(struct mmc_card *card, struct request *req,
+-	struct mmc_blk_request *brq, int *ecc_err)
++	struct mmc_blk_request *brq, int *ecc_err, int *gen_err)
+ {
+ 	bool prev_cmd_status_valid = true;
+ 	u32 status, stop_status = 0;
+@@ -837,6 +848,13 @@
+ 			return ERR_ABORT;
+ 		if (stop_status & R1_CARD_ECC_FAILED)
+ 			*ecc_err = 1;
++		if (!mmc_host_is_spi(card->host) && rq_data_dir(req) != READ)
++			if (stop_status & R1_ERROR) {
++				pr_err("%s: %s: general error sending stop command, stop cmd response %#x\n",
++				       req->rq_disk->disk_name, __func__,
++				       stop_status);
++				*gen_err = 1;
++			}
+ 	}
+ 
+ 	/* Check for set block count errors */
+@@ -1092,7 +1122,7 @@
+ 						    mmc_active);
+ 	struct mmc_blk_request *brq = &mq_mrq->brq;
+ 	struct request *req = mq_mrq->req;
+-	int ecc_err = 0;
++	int ecc_err = 0, gen_err = 0;
+ 
+ 	/*
+ 	 * sbc.error indicates a problem with the set block count
+@@ -1106,7 +1136,7 @@
+ 	 */
+ 	if (brq->sbc.error || brq->cmd.error || brq->stop.error ||
+ 	    brq->data.error) {
+-		switch (mmc_blk_cmd_recovery(card, req, brq, &ecc_err)) {
++		switch (mmc_blk_cmd_recovery(card, req, brq, &ecc_err, &gen_err)) {
+ 		case ERR_RETRY:
+ 			return MMC_BLK_RETRY;
+ 		case ERR_ABORT:
+@@ -1935,6 +1985,7 @@
+ 	struct mmc_card *card = md->queue.card;
+ 	struct mmc_host *host = card->host;
+ 	unsigned long flags;
++	unsigned int cmd_flags = req ? req->cmd_flags : 0;
+ 
+ 	if (req && !mq->mqrq_prev->req)
+ 		/* claim host only for the first request */
+@@ -1950,7 +2001,7 @@
+ 	}
+ 
+ 	mq->flags &= ~MMC_QUEUE_NEW_REQUEST;
+-	if (req && req->cmd_flags & REQ_DISCARD) {
++	if (cmd_flags & REQ_DISCARD) {
+ 		/* complete ongoing async transfer before issuing discard */
+ 		if (card->host->areq)
+ 			mmc_blk_issue_rw_rq(mq, NULL);
+@@ -1959,7 +2010,7 @@
+ 			ret = mmc_blk_issue_secdiscard_rq(mq, req);
+ 		else
+ 			ret = mmc_blk_issue_discard_rq(mq, req);
+-	} else if (req && req->cmd_flags & REQ_FLUSH) {
++	} else if (cmd_flags & REQ_FLUSH) {
+ 		/* complete ongoing async transfer before issuing flush */
+ 		if (card->host->areq)
+ 			mmc_blk_issue_rw_rq(mq, NULL);
+@@ -1975,7 +2026,7 @@
+ 
+ out:
+ 	if ((!req && !(mq->flags & MMC_QUEUE_NEW_REQUEST)) ||
+-	     (req && (req->cmd_flags & MMC_REQ_SPECIAL_MASK)))
++	     (cmd_flags & MMC_REQ_SPECIAL_MASK))
+ 		/*
+ 		 * Release host when there are no more requests
+ 		 * and after special request(discard, flush) is done.

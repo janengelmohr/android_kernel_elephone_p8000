@@ -1,0 +1,10 @@
+--- arch/score/kernel/vmlinux.lds.S
++++ arch/score/kernel/vmlinux.lds.S
+@@ -49,6 +49,7 @@
+ 	}
+ 
+ 	. = ALIGN(16);
++	_sdata =  .;			/* Start of data section */
+ 	RODATA
+ 
+ 	EXCEPTION_TABLE(16)

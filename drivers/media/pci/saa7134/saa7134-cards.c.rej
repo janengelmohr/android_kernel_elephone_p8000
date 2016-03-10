@@ -1,0 +1,13 @@
+--- drivers/media/pci/saa7134/saa7134-cards.c
++++ drivers/media/pci/saa7134/saa7134-cards.c
+@@ -8045,8 +8045,8 @@
+ 		break;
+ 	} /* switch() */
+ 
+-	/* initialize tuner */
+-	if (TUNER_ABSENT != dev->tuner_type) {
++	/* initialize tuner (don't do this when resuming) */
++	if (!dev->insuspend && TUNER_ABSENT != dev->tuner_type) {
+ 		int has_demod = (dev->tda9887_conf & TDA9887_PRESENT);
+ 
+ 		/* Note: radio tuner address is always filled in,

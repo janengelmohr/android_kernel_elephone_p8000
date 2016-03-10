@@ -1,0 +1,10 @@
+--- arch/powerpc/kernel/vmlinux.lds.S
++++ arch/powerpc/kernel/vmlinux.lds.S
+@@ -216,7 +219,6 @@
+ 		*(.opd)
+ 	}
+ 
+-	. = ALIGN(256);
+ 	.got : AT(ADDR(.got) - LOAD_OFFSET) {
+ 		__toc_start = .;
+ #ifndef CONFIG_RELOCATABLE

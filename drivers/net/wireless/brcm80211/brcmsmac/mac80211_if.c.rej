@@ -1,0 +1,30 @@
+--- drivers/net/wireless/brcm80211/brcmsmac/mac80211_if.c
++++ drivers/net/wireless/brcm80211/brcmsmac/mac80211_if.c
+@@ -426,6 +426,12 @@
+ 	bool blocked;
+ 	int err;
+ 
++	if (!wl->ucode.bcm43xx_bomminor) {
++		err = brcms_request_fw(wl, wl->wlc->hw->d11core);
++		if (err)
++			return -ENOENT;
++	}
++
+ 	ieee80211_wake_queues(hw);
+ 	spin_lock_bh(&wl->lock);
+ 	blocked = brcms_rfkill_set_hw_state(wl);
+@@ -433,14 +439,6 @@
+ 	if (!blocked)
+ 		wiphy_rfkill_stop_polling(wl->pub->ieee_hw->wiphy);
+ 
+-	if (!wl->ucode.bcm43xx_bomminor) {
+-		err = brcms_request_fw(wl, wl->wlc->hw->d11core);
+-		if (err) {
+-			brcms_remove(wl->wlc->hw->d11core);
+-			return -ENOENT;
+-		}
+-	}
+-
+ 	spin_lock_bh(&wl->lock);
+ 	/* avoid acknowledging frames before a non-monitor device is added */
+ 	wl->mute_tx = true;
