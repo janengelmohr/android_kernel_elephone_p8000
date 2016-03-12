@@ -51,7 +51,7 @@
 #else
 #define CUST_TRACKING_POINT  20 // fix for Elephone P8000 20% battery drop 
 #endif
-#define CUST_R_SENSE         20//20mO for k05ss
+#define CUST_R_SENSE         10//10mO for k05ts_a so we have faster charging
 #define CUST_HW_CC 		    0
 #define AGING_TUNING_VALUE   103
 #define CUST_R_FG_OFFSET    0
