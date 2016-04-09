@@ -1,0 +1,19 @@
+--- drivers/s390/cio/device.c
++++ drivers/s390/cio/device.c
+@@ -1610,7 +1610,7 @@
+ 	return rc;
+ }
+ 
+-struct ccw_device *ccw_device_probe_console(void)
++struct ccw_device *ccw_device_probe_console(struct ccw_driver *drv)
+ {
+ 	struct io_subchannel_private *io_priv;
+ 	struct ccw_device *cdev;
+@@ -1632,6 +1632,7 @@
+ 		kfree(io_priv);
+ 		return cdev;
+ 	}
++	cdev->drv = drv;
+ 	set_io_private(sch, io_priv);
+ 	ret = ccw_device_console_enable(cdev, sch);
+ 	if (ret) {

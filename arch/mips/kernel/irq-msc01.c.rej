@@ -1,0 +1,11 @@
+--- arch/mips/kernel/irq-msc01.c
++++ arch/mips/kernel/irq-msc01.c
+@@ -131,7 +131,7 @@
+ 
+ 	board_bind_eic_interrupt = &msc_bind_eic_interrupt;
+ 
+-	for (; nirq >= 0; nirq--, imp++) {
++	for (; nirq > 0; nirq--, imp++) {
+ 		int n = imp->im_irq;
+ 
+ 		switch (imp->im_type) {

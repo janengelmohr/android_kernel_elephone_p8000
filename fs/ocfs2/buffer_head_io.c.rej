@@ -1,0 +1,18 @@
+--- fs/ocfs2/buffer_head_io.c
++++ fs/ocfs2/buffer_head_io.c
+@@ -90,7 +90,6 @@
+ 		 * information for this bh as it's not marked locally
+ 		 * uptodate. */
+ 		ret = -EIO;
+-		put_bh(bh);
+ 		mlog_errno(ret);
+ 	}
+ 
+@@ -420,7 +419,6 @@
+ 
+ 	if (!buffer_uptodate(bh)) {
+ 		ret = -EIO;
+-		put_bh(bh);
+ 		mlog_errno(ret);
+ 	}
+ 

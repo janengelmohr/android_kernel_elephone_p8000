@@ -1,0 +1,15 @@
+--- drivers/staging/line6/pcm.c
++++ drivers/staging/line6/pcm.c
+@@ -385,8 +385,11 @@
+ */
+ static void pcm_disconnect_substream(struct snd_pcm_substream *substream)
+ {
+-	if (substream->runtime && snd_pcm_running(substream))
++	if (substream->runtime && snd_pcm_running(substream)) {
++		snd_pcm_stream_lock_irq(substream);
+ 		snd_pcm_stop(substream, SNDRV_PCM_STATE_DISCONNECTED);
++		snd_pcm_stream_unlock_irq(substream);
++	}
+ }
+ 
+ /*

@@ -1,0 +1,27 @@
+--- net/packet/af_packet.c
++++ net/packet/af_packet.c
+@@ -1142,9 +1123,13 @@
+ 				    struct sk_buff *skb,
+ 				    unsigned int num)
+ {
+-	unsigned int val = atomic_inc_return(&f->rr_cur);
++	int cur, old;
+ 
+-	return val % num;
++	cur = atomic_read(&f->rr_cur);
++	while ((old = atomic_cmpxchg(&f->rr_cur, cur,
++				     fanout_rr_next(f, num))) != cur)
++		cur = old;
++	return cur;
+ }
+ 
+ static unsigned int fanout_demux_cpu(struct packet_fanout *f,
+@@ -1184,7 +1169,7 @@
+ 			     struct packet_type *pt, struct net_device *orig_dev)
+ {
+ 	struct packet_fanout *f = pt->af_packet_priv;
+-	unsigned int num = ACCESS_ONCE(f->num_members);
++	unsigned int num = f->num_members;
+ 	struct packet_sock *po;
+ 	unsigned int idx;
+ 

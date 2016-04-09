@@ -1,0 +1,19 @@
+--- block/scsi_ioctl.c
++++ block/scsi_ioctl.c
+@@ -506,7 +506,7 @@
+ 
+ 	if (bytes && blk_rq_map_kern(q, rq, buffer, bytes, __GFP_WAIT)) {
+ 		err = DRIVER_ERROR << 24;
+-		goto out;
++		goto error;
+ 	}
+ 
+ 	memset(sense, 0, sizeof(sense));
+@@ -516,7 +516,6 @@
+ 
+ 	blk_execute_rq(q, disk, rq, 0);
+ 
+-out:
+ 	err = rq->errors & 0xff;	/* only 8 bit SCSI status */
+ 	if (err) {
+ 		if (rq->sense_len && rq->sense) {

@@ -1,0 +1,69 @@
+--- drivers/net/usb/ax88179_178a.c
++++ drivers/net/usb/ax88179_178a.c
+@@ -695,6 +695,7 @@
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+ 	struct sockaddr *addr = p;
++	int ret;
+ 
+ 	if (netif_running(net))
+ 		return -EBUSY;
+@@ -704,8 +705,12 @@
+ 	memcpy(net->dev_addr, addr->sa_data, ETH_ALEN);
+ 
+ 	/* Set the MAC address */
+-	return ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
++	ret = ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
+ 				 ETH_ALEN, net->dev_addr);
++	if (ret < 0)
++		return ret;
++
++	return 0;
+ }
+ 
+ static const struct net_device_ops ax88179_netdev_ops = {
+@@ -1029,10 +1034,10 @@
+ 	dev->mii.supports_gmii = 1;
+ 
+ 	dev->net->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-			      NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_TSO;
++			      NETIF_F_RXCSUM;
+ 
+ 	dev->net->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-				 NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_TSO;
++				 NETIF_F_RXCSUM;
+ 
+ 	/* Enable checksum offload */
+ 	*tmp = AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |
+@@ -1109,6 +1114,10 @@
+ 	u16 hdr_off;
+ 	u32 *pkt_hdr;
+ 
++	/* This check is no longer done by usbnet */
++	if (skb->len < dev->net->hard_header_len)
++		return 0;
++
+ 	skb_trim(skb, skb->len - 4);
+ 	memcpy(&rx_hdr, skb_tail_pointer(skb), 4);
+ 	le32_to_cpus(&rx_hdr);
+@@ -1173,7 +1182,6 @@
+ 	if (((skb->len + 8) % frame_size) == 0)
+ 		tx_hdr2 |= 0x80008000;	/* Enable padding */
+ 
+-	skb_linearize(skb);
+ 	headroom = skb_headroom(skb);
+ 	tailroom = skb_tailroom(skb);
+ 
+@@ -1317,10 +1325,10 @@
+ 			  1, 1, tmp);
+ 
+ 	dev->net->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-			      NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_TSO;
++			      NETIF_F_RXCSUM;
+ 
+ 	dev->net->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-				 NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_TSO;
++				 NETIF_F_RXCSUM;
+ 
+ 	/* Enable checksum offload */
+ 	*tmp = AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |

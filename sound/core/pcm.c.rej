@@ -1,0 +1,20 @@
+--- sound/core/pcm.c
++++ sound/core/pcm.c
+@@ -49,6 +49,8 @@
+ 	struct snd_pcm *pcm;
+ 
+ 	list_for_each_entry(pcm, &snd_pcm_devices, list) {
++		if (pcm->internal)
++			continue;
+ 		if (pcm->card == card && pcm->device == device)
+ 			return pcm;
+ 	}
+@@ -60,6 +62,8 @@
+ 	struct snd_pcm *pcm;
+ 
+ 	list_for_each_entry(pcm, &snd_pcm_devices, list) {
++		if (pcm->internal)
++			continue;
+ 		if (pcm->card == card && pcm->device > device)
+ 			return pcm->device;
+ 		else if (pcm->card->number > card->number)

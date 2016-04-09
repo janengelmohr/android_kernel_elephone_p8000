@@ -1,0 +1,11 @@
+--- fs/btrfs/ctree.c
++++ fs/btrfs/ctree.c
+@@ -2766,7 +2763,7 @@
+ 	 */
+ 	if (!p->leave_spinning)
+ 		btrfs_set_path_blocking(p);
+-	if (ret < 0 && !p->skip_release_on_error)
++	if (ret < 0)
+ 		btrfs_release_path(p);
+ 	return ret;
+ }

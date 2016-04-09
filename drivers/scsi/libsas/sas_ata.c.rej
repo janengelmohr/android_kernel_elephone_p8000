@@ -1,0 +1,11 @@
+--- drivers/scsi/libsas/sas_ata.c
++++ drivers/scsi/libsas/sas_ata.c
+@@ -211,7 +211,7 @@
+ 		qc->tf.nsect = 0;
+ 	}
+ 
+-	ata_tf_to_fis(&qc->tf, 1, 0, (u8*)&task->ata_task.fis);
++	ata_tf_to_fis(&qc->tf, qc->dev->link->pmp, 1, (u8 *)&task->ata_task.fis);
+ 	task->uldd_task = qc;
+ 	if (ata_is_atapi(qc->tf.protocol)) {
+ 		memcpy(task->ata_task.atapi_packet, qc->cdb, qc->dev->cdb_len);

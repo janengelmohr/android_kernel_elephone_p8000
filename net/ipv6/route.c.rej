@@ -1,0 +1,16 @@
+--- net/ipv6/route.c
++++ net/ipv6/route.c
+@@ -727,8 +769,11 @@
+ 		prefix = &prefix_buf;
+ 	}
+ 
+-	rt = rt6_get_route_info(net, prefix, rinfo->prefix_len, gwaddr,
+-				dev->ifindex);
++	if (rinfo->prefix_len == 0)
++		rt = rt6_get_dflt_router(gwaddr, dev);
++	else
++		rt = rt6_get_route_info(net, prefix, rinfo->prefix_len,
++					gwaddr, dev->ifindex);
+ 
+ 	if (rt && !lifetime) {
+ 		ip6_del_rt(rt);

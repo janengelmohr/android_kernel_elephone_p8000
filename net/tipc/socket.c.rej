@@ -1,0 +1,10 @@
+--- net/tipc/socket.c
++++ net/tipc/socket.c
+@@ -1534,7 +1540,6 @@
+ 	res = tipc_create(sock_net(sock->sk), new_sock, 0, 0);
+ 	if (res)
+ 		goto exit;
+-	security_sk_clone(sock->sk, new_sock->sk);
+ 
+ 	new_sk = new_sock->sk;
+ 	new_tsock = tipc_sk(new_sk);

@@ -1,0 +1,11 @@
+--- drivers/net/wireless/rtlwifi/rtl8188ee/trx.c
++++ drivers/net/wireless/rtlwifi/rtl8188ee/trx.c
+@@ -293,7 +293,7 @@
+ 	u8 *psaddr;
+ 	__le16 fc;
+ 	u16 type, ufc;
+-	bool match_bssid, packet_toself, packet_beacon, addr;
++	bool match_bssid, packet_toself, packet_beacon = false, addr;
+ 
+ 	tmp_buf = skb->data + pstatus->rx_drvinfo_size + pstatus->rx_bufshift;
+ 

@@ -1,0 +1,10 @@
+--- drivers/mtd/ftl.c
++++ drivers/mtd/ftl.c
+@@ -1075,7 +1075,6 @@
+ 			return;
+ 	}
+ 
+-	ftl_freepart(partition);
+ 	kfree(partition);
+ }
+ 

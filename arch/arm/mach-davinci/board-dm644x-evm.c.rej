@@ -1,0 +1,10 @@
+--- arch/arm/mach-davinci/board-dm644x-evm.c
++++ arch/arm/mach-davinci/board-dm644x-evm.c
+@@ -153,6 +153,7 @@
+ 	.parts		= davinci_evm_nandflash_partition,
+ 	.nr_parts	= ARRAY_SIZE(davinci_evm_nandflash_partition),
+ 	.ecc_mode	= NAND_ECC_HW,
++	.ecc_bits	= 1,
+ 	.bbt_options	= NAND_BBT_USE_FLASH,
+ 	.timing		= &davinci_evm_nandflash_timing,
+ };

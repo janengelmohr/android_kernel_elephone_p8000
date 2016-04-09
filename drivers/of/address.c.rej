@@ -1,0 +1,16 @@
+--- drivers/of/address.c
++++ drivers/of/address.c
+@@ -619,10 +609,10 @@
+ 	struct resource res;
+ 
+ 	while (dn) {
+-		if (!of_address_to_resource(dn, 0, &res) &&
+-		    res.start == base_address)
++		if (of_address_to_resource(dn, 0, &res))
++			continue;
++		if (res.start == base_address)
+ 			return dn;
+-
+ 		dn = of_find_matching_node(dn, matches);
+ 	}
+ 

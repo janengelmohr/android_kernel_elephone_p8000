@@ -1,0 +1,22 @@
+--- arch/powerpc/include/asm/page.h
++++ arch/powerpc/include/asm/page.h
+@@ -211,9 +211,19 @@
+ #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + VIRT_PHYS_OFFSET))
+ #define __pa(x) ((unsigned long)(x) - VIRT_PHYS_OFFSET)
+ #else
++#ifdef CONFIG_PPC64
++/*
++ * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
++ * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
++ */
++#define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET))
++#define __pa(x) ((unsigned long)(x) & 0x0fffffffffffffffUL)
++
++#else /* 32-bit, non book E */
+ #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + PAGE_OFFSET - MEMORY_START))
+ #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + MEMORY_START)
+ #endif
++#endif
+ 
+ /*
+  * Unfortunately the PLT is in the BSS in the PPC32 ELF ABI,

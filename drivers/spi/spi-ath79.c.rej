@@ -1,0 +1,14 @@
+--- drivers/spi/spi-ath79.c
++++ drivers/spi/spi-ath79.c
+@@ -132,9 +132,9 @@
+ 
+ 		flags = GPIOF_DIR_OUT;
+ 		if (spi->mode & SPI_CS_HIGH)
+-			flags |= GPIOF_INIT_HIGH;
+-		else
+ 			flags |= GPIOF_INIT_LOW;
++		else
++			flags |= GPIOF_INIT_HIGH;
+ 
+ 		status = gpio_request_one(cdata->gpio, flags,
+ 					  dev_name(&spi->dev));

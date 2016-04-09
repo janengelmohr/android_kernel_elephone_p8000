@@ -1,0 +1,21 @@
+--- drivers/usb/gadget/f_fs.c
++++ drivers/usb/gadget/f_fs.c
+@@ -1397,13 +1405,11 @@
+ 	ffs->ep0req->context = ffs;
+ 
+ 	lang = ffs->stringtabs;
+-	if (lang) {
+-		for (; *lang; ++lang) {
+-			struct usb_string *str = (*lang)->strings;
+-			int id = first_id;
+-			for (; str->s; ++id, ++str)
+-				str->id = id;
+-		}
++	for (lang = ffs->stringtabs; *lang; ++lang) {
++		struct usb_string *str = (*lang)->strings;
++		int id = first_id;
++		for (; str->s; ++id, ++str)
++			str->id = id;
+ 	}
+ 
+ 	ffs->gadget = cdev->gadget;

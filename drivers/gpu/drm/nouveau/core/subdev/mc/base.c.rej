@@ -1,0 +1,22 @@
+--- drivers/gpu/drm/nouveau/core/subdev/mc/base.c
++++ drivers/gpu/drm/nouveau/core/subdev/mc/base.c
+@@ -80,7 +80,9 @@
+ 
+ int
+ nouveau_mc_create_(struct nouveau_object *parent, struct nouveau_object *engine,
+-		   struct nouveau_oclass *oclass, int length, void **pobject)
++		   struct nouveau_oclass *oclass,
++		   const struct nouveau_mc_intr *intr_map,
++		   int length, void **pobject)
+ {
+ 	struct nouveau_device *device = nv_device(parent);
+ 	struct nouveau_mc *pmc;
+@@ -92,6 +94,8 @@
+ 	if (ret)
+ 		return ret;
+ 
++	pmc->intr_map = intr_map;
++
+ 	ret = request_irq(device->pdev->irq, nouveau_mc_intr,
+ 			  IRQF_SHARED, "nouveau", pmc);
+ 	if (ret < 0)

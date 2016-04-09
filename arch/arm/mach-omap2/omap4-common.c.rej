@@ -1,0 +1,10 @@
+--- arch/arm/mach-omap2/omap4-common.c
++++ arch/arm/mach-omap2/omap4-common.c
+@@ -162,6 +162,7 @@
+ 
+ static void omap4_l2x0_disable(void)
+ {
++	outer_flush_all();
+ 	/* Disable PL310 L2 Cache controller */
+ 	omap_smc1(0x102, 0x0);
+ }

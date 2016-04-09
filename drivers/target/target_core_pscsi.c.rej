@@ -1,0 +1,17 @@
+--- drivers/target/target_core_pscsi.c
++++ drivers/target/target_core_pscsi.c
+@@ -515,11 +515,12 @@
+ 			sh = phv->phv_lld_host;
+ 		} else {
+ 			sh = scsi_host_lookup(pdv->pdv_host_id);
+-			if (IS_ERR(sh)) {
++			if (!sh) {
+ 				pr_err("pSCSI: Unable to locate"
+ 					" pdv_host_id: %d\n", pdv->pdv_host_id);
+-				return PTR_ERR(sh);
++				return -EINVAL;
+ 			}
++			pdv->pdv_lld_host = sh;
+ 		}
+ 	} else {
+ 		if (phv->phv_mode == PHV_VIRTUAL_HOST_ID) {

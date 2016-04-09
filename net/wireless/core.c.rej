@@ -1,0 +1,10 @@
+--- net/wireless/core.c
++++ net/wireless/core.c
+@@ -876,6 +876,7 @@
+ 		cfg80211_leave_mesh(rdev, dev);
+ 		break;
+ 	case NL80211_IFTYPE_AP:
++	case NL80211_IFTYPE_P2P_GO:
+ 		cfg80211_stop_ap(rdev, dev);
+ 		break;
+ 	default:

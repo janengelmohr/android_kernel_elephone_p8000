@@ -1,0 +1,24 @@
+--- mm/page-writeback.c
++++ mm/page-writeback.c
+@@ -798,11 +803,8 @@
+ 	 *                   bw * elapsed + write_bandwidth * (period - elapsed)
+ 	 * write_bandwidth = ---------------------------------------------------
+ 	 *                                          period
+-	 *
+-	 * @written may have decreased due to account_page_redirty().
+-	 * Avoid underflowing @bw calculation.
+ 	 */
+-	bw = written - min(written, bdi->written_stamp);
++	bw = written - bdi->written_stamp;
+ 	bw *= HZ;
+ 	if (unlikely(elapsed > period)) {
+ 		do_div(bw, elapsed);
+@@ -866,7 +868,7 @@
+ 				    unsigned long now)
+ {
+ 	static DEFINE_SPINLOCK(dirty_lock);
+-	static unsigned long update_time = INITIAL_JIFFIES;
++	static unsigned long update_time;
+ 
+ 	/*
+ 	 * check locklessly first to optimize away locking for the most time

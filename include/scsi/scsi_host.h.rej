@@ -1,0 +1,22 @@
+--- include/scsi/scsi_host.h
++++ include/scsi/scsi_host.h
+@@ -475,6 +475,9 @@
+ 	 */
+ 	unsigned ordered_tag:1;
+ 
++	/* True if the controller does not support WRITE SAME */
++	unsigned no_write_same:1;
++
+ 	/*
+ 	 * Countdown for host blocking with no commands outstanding.
+ 	 */
+@@ -674,6 +677,9 @@
+ 	/* Don't resume host in EH */
+ 	unsigned eh_noresume:1;
+ 
++	/* The controller does not support WRITE SAME */
++	unsigned no_write_same:1;
++
+ 	/*
+ 	 * Optional work queue to be utilized by the transport
+ 	 */

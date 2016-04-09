@@ -1,0 +1,31 @@
+--- drivers/cpufreq/cpufreq_stats.c
++++ drivers/cpufreq/cpufreq_stats.c
+@@ -81,7 +81,7 @@
+ 	for (i = 0; i < stat->state_num; i++) {
+ 		len += sprintf(buf + len, "%u %llu\n", stat->freq_table[i],
+ 			(unsigned long long)
+-			cputime64_to_clock_t(stat->time_in_state[i]));
++			jiffies_64_to_clock_t(stat->time_in_state[i]));
+ 	}
+ 	return len;
+ }
+@@ -349,16 +349,15 @@
+ 
+ 	switch (action) {
+ 	case CPU_ONLINE:
++	case CPU_ONLINE_FROZEN:
+ 		cpufreq_update_policy(cpu);
+ 		break;
+ 	case CPU_DOWN_PREPARE:
++	case CPU_DOWN_PREPARE_FROZEN:
+ 		cpufreq_stats_free_sysfs(cpu);
+ 		break;
+ 	case CPU_DEAD:
+-		cpufreq_stats_free_table(cpu);
+-		break;
+-	case CPU_UP_CANCELED_FROZEN:
+-		cpufreq_stats_free_sysfs(cpu);
++	case CPU_DEAD_FROZEN:
+ 		cpufreq_stats_free_table(cpu);
+ 		break;
+ 	}

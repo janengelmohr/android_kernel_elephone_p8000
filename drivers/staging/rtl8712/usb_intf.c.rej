@@ -1,0 +1,10 @@
+--- drivers/staging/rtl8712/usb_intf.c
++++ drivers/staging/rtl8712/usb_intf.c
+@@ -398,6 +403,7 @@
+ 	padapter->pusb_intf = pusb_intf;
+ 	usb_set_intfdata(pusb_intf, pnetdev);
+ 	SET_NETDEV_DEV(pnetdev, &pusb_intf->dev);
++	pnetdev->dev.type = &wlan_type;
+ 	/* step 2. */
+ 	padapter->dvobj_init = &r8712_usb_dvobj_init;
+ 	padapter->dvobj_deinit = &r8712_usb_dvobj_deinit;

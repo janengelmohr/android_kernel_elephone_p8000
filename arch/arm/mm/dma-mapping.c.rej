@@ -1,0 +1,11 @@
+--- arch/arm/mm/dma-mapping.c
++++ arch/arm/mm/dma-mapping.c
+@@ -1320,7 +1329,7 @@
+ 	*handle = DMA_ERROR_CODE;
+ 	size = PAGE_ALIGN(size);
+ 
+-	if (gfp & GFP_ATOMIC)
++	if (!(gfp & __GFP_WAIT))
+ 		return __iommu_alloc_atomic(dev, size, handle);
+ 
+ 	pages = __iommu_alloc_buffer(dev, size, gfp, attrs);

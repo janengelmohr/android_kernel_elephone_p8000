@@ -1,0 +1,36 @@
+--- drivers/media/dvb-frontends/stv6110x.c
++++ drivers/media/dvb-frontends/stv6110x.c
+@@ -32,6 +32,9 @@
+ #include "stv6110x.h"
+ #include "stv6110x_priv.h"
+ 
++/* Max transfer size done by I2C transfer functions */
++#define MAX_XFER_SIZE  64
++
+ static unsigned int verbose;
+ module_param(verbose, int, 0644);
+ MODULE_PARM_DESC(verbose, "Set Verbosity level");
+@@ -61,7 +64,8 @@
+ {
+ 	int ret;
+ 	const struct stv6110x_config *config = stv6110x->config;
+-	u8 buf[len + 1];
++	u8 buf[MAX_XFER_SIZE];
++
+ 	struct i2c_msg msg = {
+ 		.addr = config->addr,
+ 		.flags = 0,
+@@ -69,6 +73,13 @@
+ 		.len = len + 1
+ 	};
+ 
++	if (1 + len > sizeof(buf)) {
++		printk(KERN_WARNING
++		       "%s: i2c wr: len=%d is too big!\n",
++		       KBUILD_MODNAME, len);
++		return -EINVAL;
++	}
++
+ 	if (start + len > 8)
+ 		return -EINVAL;
+ 

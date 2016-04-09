@@ -1,0 +1,26 @@
+--- arch/arm/kernel/relocate_kernel.S
++++ arch/arm/kernel/relocate_kernel.S
+@@ -2,10 +2,12 @@
+  * relocate_kernel.S - put the kernel image in place to boot
+  */
+ 
++#include <linux/linkage.h>
+ #include <asm/kexec.h>
+ 
+-	.globl relocate_new_kernel
+-relocate_new_kernel:
++	.align	3	/* not needed for this code, but keeps fncpy() happy */
++
++ENTRY(relocate_new_kernel)
+ 
+ 	ldr	r0,kexec_indirection_page
+ 	ldr	r1,kexec_start_address
+@@ -79,6 +81,8 @@
+ kexec_boot_atags:
+ 	.long	0x0
+ 
++ENDPROC(relocate_new_kernel)
++
+ relocate_new_kernel_end:
+ 
+ 	.globl relocate_new_kernel_size

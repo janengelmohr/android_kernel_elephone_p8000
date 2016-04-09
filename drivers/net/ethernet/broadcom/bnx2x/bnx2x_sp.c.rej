@@ -1,0 +1,12 @@
+--- drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c
++++ drivers/net/ethernet/broadcom/bnx2x/bnx2x_sp.c
+@@ -1038,9 +1038,6 @@
+ 				     ETH_VLAN_FILTER_CLASSIFY, config);
+ }
+ 
+-#define list_next_entry(pos, member) \
+-	list_entry((pos)->member.next, typeof(*(pos)), member)
+-
+ /**
+  * bnx2x_vlan_mac_restore - reconfigure next MAC/VLAN/VLAN-MAC element
+  *

@@ -1,0 +1,17 @@
+--- drivers/net/wireless/ath/ath5k/qcu.c
++++ drivers/net/wireless/ath/ath5k/qcu.c
+@@ -225,13 +225,7 @@
+ 	} else {
+ 		switch (queue_type) {
+ 		case AR5K_TX_QUEUE_DATA:
+-			for (queue = AR5K_TX_QUEUE_ID_DATA_MIN;
+-				ah->ah_txq[queue].tqi_type !=
+-				AR5K_TX_QUEUE_INACTIVE; queue++) {
+-
+-				if (queue > AR5K_TX_QUEUE_ID_DATA_MAX)
+-					return -EINVAL;
+-			}
++			queue = queue_info->tqi_subtype;
+ 			break;
+ 		case AR5K_TX_QUEUE_UAPSD:
+ 			queue = AR5K_TX_QUEUE_ID_UAPSD;

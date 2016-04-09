@@ -1,0 +1,93 @@
+--- kernel/trace/trace.c
++++ kernel/trace/trace.c
+@@ -406,15 +474,7 @@
+  */
+ void tracing_on(void)
+ {
+-	if (global_trace.trace_buffer.buffer)
+-		ring_buffer_record_on(global_trace.trace_buffer.buffer);
+-	/*
+-	 * This flag is only looked at when buffers haven't been
+-	 * allocated yet. We don't really care about the race
+-	 * between setting this flag and actually turning
+-	 * on the buffer.
+-	 */
+-	global_trace.buffer_disabled = 0;
++	tracer_tracing_on(&global_trace);
+ }
+ EXPORT_SYMBOL_GPL(tracing_on);
+ 
+@@ -649,26 +740,29 @@
+  */
+ void tracing_off(void)
+ {
+-	if (global_trace.trace_buffer.buffer)
+-		ring_buffer_record_off(global_trace.trace_buffer.buffer);
+-	/*
+-	 * This flag is only looked at when buffers haven't been
+-	 * allocated yet. We don't really care about the race
+-	 * between setting this flag and actually turning
+-	 * on the buffer.
+-	 */
+-	global_trace.buffer_disabled = 1;
++	tracer_tracing_off(&global_trace);
+ }
+ EXPORT_SYMBOL_GPL(tracing_off);
+ 
+ /**
++ * tracer_tracing_is_on - show real state of ring buffer enabled
++ * @tr : the trace array to know if ring buffer is enabled
++ *
++ * Shows real state of the ring buffer if it is enabled or not.
++ */
++int tracer_tracing_is_on(struct trace_array *tr)
++{
++	if (tr->trace_buffer.buffer)
++		return ring_buffer_record_is_on(tr->trace_buffer.buffer);
++	return !tr->buffer_disabled;
++}
++
++/**
+  * tracing_is_on - show state of ring buffers enabled
+  */
+ int tracing_is_on(void)
+ {
+-	if (global_trace.trace_buffer.buffer)
+-		return ring_buffer_record_is_on(global_trace.trace_buffer.buffer);
+-	return !global_trace.buffer_disabled;
++	return tracer_tracing_is_on(&global_trace);
+ }
+ EXPORT_SYMBOL_GPL(tracing_is_on);
+ 
+@@ -1365,7 +1455,6 @@
+ 	struct ring_buffer *buffer;
+ 	unsigned long flags;
+ 
+-	ftrace_stop();
+ 	raw_spin_lock_irqsave(&global_trace.start_lock, flags);
+ 	if (global_trace.stop_count++)
+ 		goto out;
+@@ -4434,8 +4601,7 @@
+ 
+ 	/* value is in KB */
+ 	val <<= 10;
+-
+-	ret = tracing_resize_ring_buffer(tc->tr, val, tc->cpu);
++	ret = tracing_resize_ring_buffer(tr, val, tracing_get_cpu(inode));
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -5862,11 +6075,11 @@
+ 	if (buffer) {
+ 		mutex_lock(&trace_types_lock);
+ 		if (val) {
+-			ring_buffer_record_on(buffer);
++			tracer_tracing_on(tr);
+ 			if (tr->current_trace->start)
+ 				tr->current_trace->start(tr);
+ 		} else {
+-			ring_buffer_record_off(buffer);
++			tracer_tracing_off(tr);
+ 			if (tr->current_trace->stop)
+ 				tr->current_trace->stop(tr);
+ 		}

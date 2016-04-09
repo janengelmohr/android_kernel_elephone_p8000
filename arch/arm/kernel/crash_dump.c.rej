@@ -1,0 +1,11 @@
+--- arch/arm/kernel/crash_dump.c
++++ arch/arm/kernel/crash_dump.c
+@@ -39,7 +39,7 @@
+ 	if (!csize)
+ 		return 0;
+ 
+-	vaddr = ioremap(pfn << PAGE_SHIFT, PAGE_SIZE);
++	vaddr = ioremap(__pfn_to_phys(pfn), PAGE_SIZE);
+ 	if (!vaddr)
+ 		return -ENOMEM;
+ 

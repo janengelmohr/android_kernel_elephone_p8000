@@ -1,0 +1,10 @@
+--- security/keys/process_keys.c
++++ security/keys/process_keys.c
+@@ -792,6 +792,7 @@
+ 		ret = PTR_ERR(keyring);
+ 		goto error2;
+ 	} else if (keyring == new->session_keyring) {
++		key_put(keyring);
+ 		ret = 0;
+ 		goto error2;
+ 	}

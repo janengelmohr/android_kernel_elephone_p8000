@@ -1,0 +1,10 @@
+--- net/sctp/associola.c
++++ net/sctp/associola.c
+@@ -1296,6 +1295,7 @@
+ 	asoc->peer.peer_hmacs = new->peer.peer_hmacs;
+ 	new->peer.peer_hmacs = NULL;
+ 
++	sctp_auth_key_put(asoc->asoc_shared_key);
+ 	sctp_auth_asoc_init_active_key(asoc, GFP_ATOMIC);
+ }
+ 

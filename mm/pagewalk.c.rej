@@ -1,0 +1,11 @@
+--- mm/pagewalk.c
++++ mm/pagewalk.c
+@@ -245,7 +248,7 @@
+ 		if (err)
+ 			break;
+ 		pgd++;
+-	} while (addr = next, addr != end);
++	} while (addr = next, addr < end);
+ 
+ 	return err;
+ }

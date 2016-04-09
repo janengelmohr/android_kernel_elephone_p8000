@@ -1,0 +1,32 @@
+--- drivers/ntb/ntb_hw.h
++++ drivers/ntb/ntb_hw.h
+@@ -127,6 +127,8 @@
+ 	unsigned char link_status;
+ 	struct delayed_work hb_timer;
+ 	unsigned long last_ts;
++
++	struct dentry *debugfs_dir;
+ };
+ 
+ /**
+@@ -155,6 +157,20 @@
+ 	return ndev->pdev;
+ }
+ 
++/**
++ * ntb_query_debugfs() - return the debugfs pointer
++ * @ndev: pointer to ntb_device instance
++ *
++ * Given the ntb pointer, return the debugfs directory pointer for the NTB
++ * hardware device
++ *
++ * RETURNS: a pointer to the debugfs directory
++ */
++static inline struct dentry *ntb_query_debugfs(struct ntb_device *ndev)
++{
++	return ndev->debugfs_dir;
++}
++
+ struct ntb_device *ntb_register_transport(struct pci_dev *pdev,
+ 					  void *transport);
+ void ntb_unregister_transport(struct ntb_device *ndev);

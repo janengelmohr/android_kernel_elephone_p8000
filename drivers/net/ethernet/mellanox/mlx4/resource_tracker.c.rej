@@ -1,0 +1,11 @@
+--- drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
++++ drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
+@@ -1207,7 +1207,7 @@
+ 
+ 	switch (op) {
+ 	case RES_OP_RESERVE:
+-		count = get_param_l(&in_param);
++		count = get_param_l(&in_param) & 0xffffff;
+ 		align = get_param_h(&in_param);
+ 		err = __mlx4_qp_reserve_range(dev, count, align, &base);
+ 		if (err)

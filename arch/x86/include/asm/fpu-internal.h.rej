@@ -1,0 +1,11 @@
+--- arch/x86/include/asm/fpu-internal.h
++++ arch/x86/include/asm/fpu-internal.h
+@@ -369,7 +368,7 @@
+ 	preempt_disable();
+ 	tsk->fpu_counter = 0;
+ 	__drop_fpu(tsk);
+-	clear_stopped_child_used_math(tsk);
++	clear_used_math();
+ 	preempt_enable();
+ }
+ 

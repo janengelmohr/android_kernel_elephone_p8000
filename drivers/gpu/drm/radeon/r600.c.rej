@@ -1,0 +1,12 @@
+--- drivers/gpu/drm/radeon/r600.c
++++ drivers/gpu/drm/radeon/r600.c
+@@ -3439,9 +3419,6 @@
+ 		rdev->accel_working = false;
+ 	}
+ 
+-	/* posting read */
+-	RREG32(R_000E50_SRBM_STATUS);
+-
+ 	return 0;
+ }
+ 

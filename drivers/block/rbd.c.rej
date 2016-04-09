@@ -1,0 +1,26 @@
+--- drivers/block/rbd.c
++++ drivers/block/rbd.c
+@@ -2314,19 +2354,21 @@
+ 	rbd_obj_request_put(obj_request);
+ out_unwind:
+ 	for_each_obj_request_safe(img_request, obj_request, next_obj_request)
+-		rbd_obj_request_put(obj_request);
++		rbd_img_obj_request_del(img_request, obj_request);
+ 
+ 	return -ENOMEM;
+ }
+ 
+ static void
+-rbd_img_obj_copyup_callback(struct rbd_obj_request *obj_request)
++rbd_osd_copyup_callback(struct rbd_obj_request *obj_request)
+ {
+ 	struct rbd_img_request *img_request;
+ 	struct rbd_device *rbd_dev;
+ 	struct page **pages;
+ 	u32 page_count;
+ 
++	dout("%s: obj %p\n", __func__, obj_request);
++
+ 	rbd_assert(obj_request->type == OBJ_REQUEST_BIO);
+ 	rbd_assert(obj_request_img_data_test(obj_request));
+ 	img_request = obj_request->img_request;

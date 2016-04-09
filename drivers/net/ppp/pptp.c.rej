@@ -1,0 +1,22 @@
+--- drivers/net/ppp/pptp.c
++++ drivers/net/ppp/pptp.c
+@@ -420,9 +420,6 @@
+ 	struct pptp_opt *opt = &po->proto.pptp;
+ 	int error = 0;
+ 
+-	if (sockaddr_len < sizeof(struct sockaddr_pppox))
+-		return -EINVAL;
+-
+ 	lock_sock(sk);
+ 
+ 	opt->src_addr = sp->sa_addr.pptp;
+@@ -444,9 +441,6 @@
+ 	struct flowi4 fl4;
+ 	int error = 0;
+ 
+-	if (sockaddr_len < sizeof(struct sockaddr_pppox))
+-		return -EINVAL;
+-
+ 	if (sp->sa_protocol != PX_PROTO_PPTP)
+ 		return -EINVAL;
+ 

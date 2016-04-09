@@ -1,0 +1,14 @@
+--- drivers/acpi/acpica/utcopy.c
++++ drivers/acpi/acpica/utcopy.c
+@@ -998,5 +998,11 @@
+ 		status = acpi_ut_copy_simple_object(source_desc, *dest_desc);
+ 	}
+ 
++	/* Delete the allocated object if copy failed */
++
++	if (ACPI_FAILURE(status)) {
++		acpi_ut_remove_reference(*dest_desc);
++	}
++
+ 	return_ACPI_STATUS(status);
+ }

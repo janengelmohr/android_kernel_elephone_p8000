@@ -1,0 +1,15 @@
+--- net/ipv4/udp.c
++++ net/ipv4/udp.c
+@@ -1294,8 +1295,10 @@
+ 	}
+ 	unlock_sock_fast(sk, slow);
+ 
+-	/* starting over for a new packet, but check if we need to yield */
+-	cond_resched();
++	if (noblock)
++		return -EAGAIN;
++
++	/* starting over for a new packet */
+ 	msg->msg_flags &= ~MSG_TRUNC;
+ 	goto try_again;
+ }

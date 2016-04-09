@@ -1,0 +1,11 @@
+--- arch/x86/include/asm/irqflags.h
++++ arch/x86/include/asm/irqflags.h
+@@ -129,7 +129,7 @@
+ 
+ #define PARAVIRT_ADJUST_EXCEPTION_FRAME	/*  */
+ 
+-#define INTERRUPT_RETURN	iretq
++#define INTERRUPT_RETURN	jmp native_iret
+ #define USERGS_SYSRET64				\
+ 	swapgs;					\
+ 	sysretq;

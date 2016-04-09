@@ -1,0 +1,22 @@
+--- drivers/sbus/char/bbc_envctrl.c
++++ drivers/sbus/char/bbc_envctrl.c
+@@ -452,6 +452,9 @@
+ 	if (!tp)
+ 		return;
+ 
++	INIT_LIST_HEAD(&tp->bp_list);
++	INIT_LIST_HEAD(&tp->glob_list);
++
+ 	tp->client = bbc_i2c_attach(bp, op);
+ 	if (!tp->client) {
+ 		kfree(tp);
+@@ -497,6 +500,9 @@
+ 	if (!fp)
+ 		return;
+ 
++	INIT_LIST_HEAD(&fp->bp_list);
++	INIT_LIST_HEAD(&fp->glob_list);
++
+ 	fp->client = bbc_i2c_attach(bp, op);
+ 	if (!fp->client) {
+ 		kfree(fp);

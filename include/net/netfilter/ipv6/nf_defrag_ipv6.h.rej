@@ -1,0 +1,14 @@
+--- include/net/netfilter/ipv6/nf_defrag_ipv6.h
++++ include/net/netfilter/ipv6/nf_defrag_ipv6.h
+@@ -6,10 +6,7 @@
+ extern int nf_ct_frag6_init(void);
+ extern void nf_ct_frag6_cleanup(void);
+ extern struct sk_buff *nf_ct_frag6_gather(struct sk_buff *skb, u32 user);
+-extern void nf_ct_frag6_output(unsigned int hooknum, struct sk_buff *skb,
+-			       struct net_device *in,
+-			       struct net_device *out,
+-			       int (*okfn)(struct sk_buff *));
++extern void nf_ct_frag6_consume_orig(struct sk_buff *skb);
+ 
+ struct inet_frags_ctl;
+ 

@@ -1,0 +1,42 @@
+--- fs/nfs/nfs4client.c
++++ fs/nfs/nfs4client.c
+@@ -462,30 +466,27 @@
+ 			prev = pos;
+ 
+ 			status = nfs_wait_client_init_complete(pos);
+-			if (status == 0) {
++			if (pos->cl_cons_state == NFS_CS_SESSION_INITING) {
+ 				nfs4_schedule_lease_recovery(pos);
+ 				status = nfs4_wait_clnt_recover(pos);
+ 			}
+ 			spin_lock(&nn->nfs_client_lock);
+ 			if (status < 0)
+-				continue;
++				break;
++			status = -NFS4ERR_STALE_CLIENTID;
+ 		}
+ 		if (pos->cl_cons_state != NFS_CS_READY)
+ 			continue;
+ 
+-		if (pos->rpc_ops != new->rpc_ops)
+-			continue;
+-
+-		if (pos->cl_proto != new->cl_proto)
+-			continue;
+-
+-		if (pos->cl_minorversion != new->cl_minorversion)
+-			continue;
+-
+ 		if (!nfs4_match_clientids(pos, new))
+ 			continue;
+ 
+-		if (!nfs4_match_serverowners(pos, new))
++		/*
++		 * Note that session trunking is just a special subcase of
++		 * client id trunking. In either case, we want to fall back
++		 * to using the existing nfs_client.
++		 */
++		if (!nfs4_check_clientid_trunking(pos, new))
+ 			continue;
+ 
+ 		atomic_inc(&pos->cl_count);

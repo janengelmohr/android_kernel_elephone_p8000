@@ -1,0 +1,21 @@
+--- sound/core/compress_offload.c
++++ sound/core/compress_offload.c
+@@ -794,15 +845,17 @@
+ 	mutex_lock(&stream->device->lock);
+ 	switch (_IOC_NR(cmd)) {
+ 	case _IOC_NR(SNDRV_COMPRESS_IOCTL_VERSION):
+-		put_user(SNDRV_COMPRESS_VERSION,
++		retval = put_user(SNDRV_COMPRESS_VERSION,
+ 				(int __user *)arg) ? -EFAULT : 0;
+ 		break;
+ 	case _IOC_NR(SNDRV_COMPRESS_GET_CAPS):
+ 		retval = snd_compr_get_caps(stream, arg);
+ 		break;
++#ifndef COMPR_CODEC_CAPS_OVERFLOW
+ 	case _IOC_NR(SNDRV_COMPRESS_GET_CODEC_CAPS):
+ 		retval = snd_compr_get_codec_caps(stream, arg);
+ 		break;
++#endif
+ 	case _IOC_NR(SNDRV_COMPRESS_SET_PARAMS):
+ 		retval = snd_compr_set_params(stream, arg);
+ 		break;

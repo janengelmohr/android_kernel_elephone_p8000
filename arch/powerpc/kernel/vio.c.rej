@@ -1,0 +1,22 @@
+--- arch/powerpc/kernel/vio.c
++++ arch/powerpc/kernel/vio.c
+@@ -1529,11 +1529,15 @@
+ 	const char *cp;
+ 
+ 	dn = dev->of_node;
+-	if (!dn)
+-		return -ENODEV;
++	if (!dn) {
++		strcpy(buf, "\n");
++		return strlen(buf);
++	}
+ 	cp = of_get_property(dn, "compatible", NULL);
+-	if (!cp)
+-		return -ENODEV;
++	if (!cp) {
++		strcpy(buf, "\n");
++		return strlen(buf);
++	}
+ 
+ 	return sprintf(buf, "vio:T%sS%s\n", vio_dev->type, cp);
+ }

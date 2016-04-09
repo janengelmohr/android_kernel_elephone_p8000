@@ -1,0 +1,11 @@
+--- crypto/crypto_user.c
++++ crypto/crypto_user.c
+@@ -466,7 +466,7 @@
+ 	type -= CRYPTO_MSG_BASE;
+ 	link = &crypto_dispatch[type];
+ 
+-	if (!capable(CAP_NET_ADMIN))
++	if (!netlink_capable(skb, CAP_NET_ADMIN))
+ 		return -EPERM;
+ 
+ 	if ((type == (CRYPTO_MSG_GETALG - CRYPTO_MSG_BASE) &&

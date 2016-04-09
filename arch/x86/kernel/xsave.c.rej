@@ -1,0 +1,26 @@
+--- arch/x86/kernel/xsave.c
++++ arch/x86/kernel/xsave.c
+@@ -390,16 +388,20 @@
+ 		 */
+ 		drop_fpu(tsk);
+ 
+-		if (__copy_from_user(xsave, buf_fx, state_size) ||
++		if (__copy_from_user(&fpu->state->xsave, buf_fx, state_size) ||
+ 		    __copy_from_user(&env, buf, sizeof(env))) {
++			fpu_finit(fpu);
+ 			err = -1;
+ 		} else {
+ 			sanitize_restored_xstate(tsk, &env, xstate_bv, fx_only);
+-			set_used_math();
+ 		}
+ 
+-		if (use_eager_fpu())
++		set_used_math();
++		if (use_eager_fpu()) {
++			preempt_disable();
+ 			math_state_restore();
++			preempt_enable();
++		}
+ 
+ 		return err;
+ 	} else {

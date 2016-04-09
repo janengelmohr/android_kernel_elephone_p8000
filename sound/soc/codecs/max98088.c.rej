@@ -1,0 +1,11 @@
+--- sound/soc/codecs/max98088.c
++++ sound/soc/codecs/max98088.c
+@@ -1612,7 +1612,7 @@
+ 
+ static void max98088_sync_cache(struct snd_soc_codec *codec)
+ {
+-       u16 *reg_cache = codec->reg_cache;
++       u8 *reg_cache = codec->reg_cache;
+        int i;
+ 
+        if (!codec->cache_sync)

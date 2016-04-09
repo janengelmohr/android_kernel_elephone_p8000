@@ -1,0 +1,92 @@
+--- drivers/usb/serial/keyspan.c
++++ drivers/usb/serial/keyspan.c
+@@ -412,8 +406,6 @@
+ 	}
+ 	port = serial->port[msg->port];
+ 	p_priv = usb_get_serial_port_data(port);
+-	if (!p_priv)
+-		goto resubmit;
+ 
+ 	/* Update handshaking pin state information */
+ 	old_dcd_state = p_priv->dcd_state;
+@@ -424,7 +416,7 @@
+ 
+ 	if (old_dcd_state != p_priv->dcd_state)
+ 		tty_port_tty_hangup(&port->port, true);
+-resubmit:
++
+ 	/* Resubmit urb so we continue receiving */
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (err != 0)
+@@ -539,8 +531,6 @@
+ 	}
+ 	port = serial->port[msg->port];
+ 	p_priv = usb_get_serial_port_data(port);
+-	if (!p_priv)
+-		goto resubmit;
+ 
+ 	/* Update handshaking pin state information */
+ 	old_dcd_state = p_priv->dcd_state;
+@@ -551,7 +541,7 @@
+ 
+ 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+ 		tty_port_tty_hangup(&port->port, true);
+-resubmit:
++
+ 		/* Resubmit urb so we continue receiving */
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (err != 0)
+@@ -628,8 +618,6 @@
+ 	}
+ 	port = serial->port[msg->portNumber];
+ 	p_priv = usb_get_serial_port_data(port);
+-	if (!p_priv)
+-		goto resubmit;
+ 
+ 	/* Update handshaking pin state information */
+ 	old_dcd_state = p_priv->dcd_state;
+@@ -640,7 +628,7 @@
+ 
+ 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+ 		tty_port_tty_hangup(&port->port, true);
+-resubmit:
++
+ 	/* Resubmit urb so we continue receiving */
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (err != 0)
+@@ -863,8 +836,6 @@
+ 
+ 	port = serial->port[0];
+ 	p_priv = usb_get_serial_port_data(port);
+-	if (!p_priv)
+-		goto resubmit;
+ 
+ 	/* Update handshaking pin state information */
+ 	old_dcd_state = p_priv->dcd_state;
+@@ -875,7 +846,7 @@
+ 
+ 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+ 		tty_port_tty_hangup(&port->port, true);
+-resubmit:
++
+ 	/* Resubmit urb so we continue receiving */
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (err != 0)
+@@ -936,8 +907,6 @@
+ 
+ 	port = serial->port[msg->port];
+ 	p_priv = usb_get_serial_port_data(port);
+-	if (!p_priv)
+-		goto resubmit;
+ 
+ 	/* Update handshaking pin state information */
+ 	old_dcd_state = p_priv->dcd_state;
+@@ -946,7 +915,7 @@
+ 
+ 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+ 		tty_port_tty_hangup(&port->port, true);
+-resubmit:
++
+ 	/* Resubmit urb so we continue receiving */
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (err != 0)

@@ -1,0 +1,10 @@
+--- net/mac80211/ibss.c
++++ net/mac80211/ibss.c
+@@ -1166,6 +1166,7 @@
+ 	clear_bit(SDATA_STATE_OFFCHANNEL_BEACON_STOPPED, &sdata->state);
+ 	ieee80211_bss_info_change_notify(sdata, BSS_CHANGED_BEACON_ENABLED |
+ 						BSS_CHANGED_IBSS);
++	ieee80211_vif_release_channel(sdata);
+ 	synchronize_rcu();
+ 	kfree(presp);
+ 

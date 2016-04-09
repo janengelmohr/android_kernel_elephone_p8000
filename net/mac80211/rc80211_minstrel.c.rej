@@ -1,0 +1,19 @@
+--- net/mac80211/rc80211_minstrel.c
++++ net/mac80211/rc80211_minstrel.c
+@@ -290,7 +290,7 @@
+ 	struct minstrel_rate *msr, *mr;
+ 	unsigned int ndx;
+ 	bool mrr_capable;
+-	bool prev_sample = mi->prev_sample;
++	bool prev_sample;
+ 	int delta;
+ 	int sampling_ratio;
+ 
+@@ -314,6 +314,7 @@
+ 			(mi->sample_count + mi->sample_deferred / 2);
+ 
+ 	/* delta < 0: no sampling required */
++	prev_sample = mi->prev_sample;
+ 	mi->prev_sample = false;
+ 	if (delta < 0 || (!mrr_capable && prev_sample))
+ 		return;

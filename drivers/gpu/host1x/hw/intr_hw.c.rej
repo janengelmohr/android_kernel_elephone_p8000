@@ -1,0 +1,20 @@
+--- drivers/gpu/host1x/hw/intr_hw.c
++++ drivers/gpu/host1x/hw/intr_hw.c
+@@ -48,7 +48,7 @@
+ 	unsigned long reg;
+ 	int i, id;
+ 
+-	for (i = 0; i <= BIT_WORD(host->info->nb_pts); i++) {
++	for (i = 0; i < DIV_ROUND_UP(host->info->nb_pts, 32); i++) {
+ 		reg = host1x_sync_readl(host,
+ 			HOST1X_SYNC_SYNCPT_THRESH_CPU0_INT_STATUS(i));
+ 		for_each_set_bit(id, &reg, BITS_PER_LONG) {
+@@ -65,7 +65,7 @@
+ {
+ 	u32 i;
+ 
+-	for (i = 0; i <= BIT_WORD(host->info->nb_pts); ++i) {
++	for (i = 0; i < DIV_ROUND_UP(host->info->nb_pts, 32); ++i) {
+ 		host1x_sync_writel(host, 0xffffffffu,
+ 			HOST1X_SYNC_SYNCPT_THRESH_INT_DISABLE(i));
+ 		host1x_sync_writel(host, 0xffffffffu,

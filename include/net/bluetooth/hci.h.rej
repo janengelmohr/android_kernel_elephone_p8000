@@ -1,0 +1,10 @@
+--- include/net/bluetooth/hci.h
++++ include/net/bluetooth/hci.h
+@@ -104,6 +104,7 @@
+ enum {
+ 	HCI_SETUP,
+ 	HCI_AUTO_OFF,
++	HCI_RFKILLED,
+ 	HCI_MGMT,
+ 	HCI_PAIRABLE,
+ 	HCI_SERVICE_CACHE,

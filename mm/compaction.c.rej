@@ -1,0 +1,11 @@
+--- mm/compaction.c
++++ mm/compaction.c
+@@ -862,7 +843,7 @@
+ 			return COMPACT_PARTIAL;
+ 
+ 		/* Job done if allocation would set block type */
+-		if (order >= pageblock_order && area->nr_free)
++		if (cc->order >= pageblock_order && area->nr_free)
+ 			return COMPACT_PARTIAL;
+ 	}
+ 

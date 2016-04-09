@@ -1,0 +1,34 @@
+--- drivers/infiniband/ulp/isert/ib_isert.h
++++ drivers/infiniband/ulp/isert/ib_isert.h
+@@ -96,16 +97,18 @@
+ 	struct iscsi_conn	*conn;
+ 	struct list_head	conn_accept_node;
+ 	struct completion	conn_login_comp;
++	struct completion	login_req_comp;
+ 	struct iser_tx_desc	conn_login_tx_desc;
+ 	struct rdma_cm_id	*conn_cm_id;
+ 	struct ib_pd		*conn_pd;
+ 	struct ib_mr		*conn_mr;
+ 	struct ib_qp		*conn_qp;
+ 	struct isert_device	*conn_device;
+-	struct work_struct	conn_logout_work;
+-	wait_queue_head_t	conn_wait;
+-	wait_queue_head_t	conn_wait_comp_err;
++	struct mutex		conn_mutex;
++	struct completion	conn_wait;
++	struct completion	conn_wait_comp_err;
+ 	struct kref		conn_kref;
++	struct work_struct	release_work;
+ };
+ 
+ #define ISERT_MAX_CQ 64
+@@ -131,7 +134,8 @@
+ };
+ 
+ struct isert_np {
+-	wait_queue_head_t	np_accept_wq;
++	struct iscsi_np         *np;
++	struct semaphore	np_sem;
+ 	struct rdma_cm_id	*np_cm_id;
+ 	struct mutex		np_accept_mutex;
+ 	struct list_head	np_accept_list;

@@ -1,0 +1,10 @@
+--- drivers/mtd/nand/mxc_nand.c
++++ drivers/mtd/nand/mxc_nand.c
+@@ -676,7 +676,6 @@
+ 		ecc_stat >>= 4;
+ 	} while (--no_subpages);
+ 
+-	mtd->ecc_stats.corrected += ret;
+ 	pr_debug("%d Symbol Correctable RS-ECC Error\n", ret);
+ 
+ 	return ret;

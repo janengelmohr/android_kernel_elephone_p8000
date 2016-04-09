@@ -1,0 +1,11 @@
+--- kernel/smp.c
++++ kernel/smp.c
+@@ -658,7 +658,7 @@
+ 			if (cond_func(cpu, info)) {
+ 				ret = smp_call_function_single(cpu, func,
+ 								info, wait);
+-				WARN_ON_ONCE(!ret);
++				WARN_ON_ONCE(ret);
+ 			}
+ 		preempt_enable();
+ 	}

@@ -1,0 +1,47 @@
+--- drivers/net/wireless/rtlwifi/pci.c
++++ drivers/net/wireless/rtlwifi/pci.c
+@@ -734,6 +734,8 @@
+ 	};
+ 	int index = rtlpci->rx_ring[rx_queue_idx].idx;
+ 
++	if (rtlpci->driver_is_goingto_unload)
++		return;
+ 	/*RX NORMAL PKT */
+ 	while (count--) {
+ 		/*rx descriptor */
+@@ -1008,19 +1010,6 @@
+ 	return;
+ }
+ 
+-static void rtl_lps_change_work_callback(struct work_struct *work)
+-{
+-	struct rtl_works *rtlworks =
+-	    container_of(work, struct rtl_works, lps_change_work);
+-	struct ieee80211_hw *hw = rtlworks->hw;
+-	struct rtl_priv *rtlpriv = rtl_priv(hw);
+-
+-	if (rtlpriv->enter_ps)
+-		rtl_lps_enter(hw);
+-	else
+-		rtl_lps_leave(hw);
+-}
+-
+ static void _rtl_pci_init_trx_var(struct ieee80211_hw *hw)
+ {
+ 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
+@@ -1643,6 +1632,7 @@
+ 	 */
+ 	set_hal_stop(rtlhal);
+ 
++	rtlpci->driver_is_goingto_unload = true;
+ 	rtlpriv->cfg->ops->disable_interrupt(hw);
+ 	cancel_work_sync(&rtlpriv->works.lps_change_work);
+ 
+@@ -1660,7 +1650,6 @@
+ 	ppsc->rfchange_inprogress = true;
+ 	spin_unlock_irqrestore(&rtlpriv->locks.rf_ps_lock, flags);
+ 
+-	rtlpci->driver_is_goingto_unload = true;
+ 	rtlpriv->cfg->ops->hw_disable(hw);
+ 	/* some things are not needed if firmware not available */
+ 	if (!rtlpriv->max_fw_size)

@@ -1,0 +1,11 @@
+--- fs/proc/page.c
++++ fs/proc/page.c
+@@ -121,7 +121,7 @@
+ 	 * just checks PG_head/PG_tail, so we need to check PageLRU to make
+ 	 * sure a given page is a thp, not a non-huge compound page.
+ 	 */
+-	else if (PageTransCompound(page) && PageLRU(compound_trans_head(page)))
++	else if (PageTransCompound(page) && PageLRU(compound_head(page)))
+ 		u |= 1 << KPF_THP;
+ 
+ 	/*

@@ -1,0 +1,11 @@
+--- net/bridge/br_input.c
++++ net/bridge/br_input.c
+@@ -71,7 +71,7 @@
+ 		goto drop;
+ 
+ 	if (!br_allowed_ingress(p->br, nbp_get_vlan_info(p), skb, &vid))
+-		goto drop;
++		goto out;
+ 
+ 	/* insert into forwarding database after filtering to avoid spoofing */
+ 	br = p->br;

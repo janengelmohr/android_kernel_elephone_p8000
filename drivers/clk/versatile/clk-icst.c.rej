@@ -1,0 +1,11 @@
+--- drivers/clk/versatile/clk-icst.c
++++ drivers/clk/versatile/clk-icst.c
+@@ -107,7 +107,7 @@
+ 
+ 	vco = icst_hz_to_vco(icst->params, rate);
+ 	icst->rate = icst_hz(icst->params, vco);
+-	vco_set(icst->vcoreg, icst->lockreg, vco);
++	vco_set(icst->lockreg, icst->vcoreg, vco);
+ 	return 0;
+ }
+ 

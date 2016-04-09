@@ -1,0 +1,11 @@
+--- drivers/net/can/usb/peak_usb/pcan_usb.c
++++ drivers/net/can/usb/peak_usb/pcan_usb.c
+@@ -649,7 +649,7 @@
+ 		if ((mc->ptr + rec_len) > mc->end)
+ 			goto decode_failed;
+ 
+-		memcpy(cf->data, mc->ptr, rec_len);
++		memcpy(cf->data, mc->ptr, cf->can_dlc);
+ 		mc->ptr += rec_len;
+ 	}
+ 

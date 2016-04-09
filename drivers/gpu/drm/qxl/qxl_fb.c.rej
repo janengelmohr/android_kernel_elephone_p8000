@@ -1,0 +1,11 @@
+--- drivers/gpu/drm/qxl/qxl_fb.c
++++ drivers/gpu/drm/qxl/qxl_fb.c
+@@ -91,7 +91,7 @@
+ 	u32 x1, x2, y1, y2;
+ 
+ 	/* TODO: hard coding 32 bpp */
+-	int stride = qfbdev->qfb.base.pitches[0] * 4;
++	int stride = qfbdev->qfb.base.pitches[0];
+ 
+ 	x1 = qfbdev->dirty.x1;
+ 	x2 = qfbdev->dirty.x2;

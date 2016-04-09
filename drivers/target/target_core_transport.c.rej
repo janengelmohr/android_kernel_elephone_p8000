@@ -1,0 +1,13 @@
+--- drivers/target/target_core_transport.c
++++ drivers/target/target_core_transport.c
+@@ -2206,10 +2190,6 @@
+ 
+ out:
+ 	spin_unlock_irqrestore(&se_sess->sess_cmd_lock, flags);
+-
+-	if (ret && ack_kref)
+-		target_put_sess_cmd(se_sess, se_cmd);
+-
+ 	return ret;
+ }
+ EXPORT_SYMBOL(target_get_sess_cmd);

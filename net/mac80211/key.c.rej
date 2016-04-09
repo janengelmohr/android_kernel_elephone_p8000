@@ -1,0 +1,11 @@
+--- net/mac80211/key.c
++++ net/mac80211/key.c
+@@ -607,7 +607,7 @@
+ 	int i;
+ 
+ 	mutex_lock(&local->key_mtx);
+-	for (i = 0; i < NUM_DEFAULT_KEYS; i++) {
++	for (i = 0; i < ARRAY_SIZE(sta->gtk); i++) {
+ 		key = key_mtx_dereference(local, sta->gtk[i]);
+ 		if (!key)
+ 			continue;

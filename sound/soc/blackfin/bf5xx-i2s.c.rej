@@ -1,0 +1,10 @@
+--- sound/soc/blackfin/bf5xx-i2s.c
++++ sound/soc/blackfin/bf5xx-i2s.c
+@@ -111,6 +111,7 @@
+ 		bf5xx_i2s->tcr2 |= 7;
+ 		bf5xx_i2s->rcr2 |= 7;
+ 		sport_handle->wdsize = 1;
++		break;
+ 	case SNDRV_PCM_FORMAT_S16_LE:
+ 		bf5xx_i2s->tcr2 |= 15;
+ 		bf5xx_i2s->rcr2 |= 15;

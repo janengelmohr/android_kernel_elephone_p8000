@@ -1,0 +1,28 @@
+--- drivers/mfd/rtsx_pcr.c
++++ drivers/mfd/rtsx_pcr.c
+@@ -1137,7 +1137,7 @@
+ 	pcr->msi_en = msi_en;
+ 	if (pcr->msi_en) {
+ 		ret = pci_enable_msi(pcidev);
+-		if (ret < 0)
++		if (ret)
+ 			pcr->msi_en = false;
+ 	}
+ 
+@@ -1195,8 +1195,14 @@
+ 
+ 	pcr->remove_pci = true;
+ 
+-	cancel_delayed_work(&pcr->carddet_work);
+-	cancel_delayed_work(&pcr->idle_work);
++	/* Disable interrupts at the pcr level */
++	spin_lock_irq(&pcr->lock);
++	rtsx_pci_writel(pcr, RTSX_BIER, 0);
++	pcr->bier = 0;
++	spin_unlock_irq(&pcr->lock);
++
++	cancel_delayed_work_sync(&pcr->carddet_work);
++	cancel_delayed_work_sync(&pcr->idle_work);
+ 
+ 	mfd_remove_devices(&pcidev->dev);
+ 

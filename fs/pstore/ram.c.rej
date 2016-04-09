@@ -1,0 +1,10 @@
+--- fs/pstore/ram.c
++++ fs/pstore/ram.c
+@@ -108,6 +115,7 @@
+ 
+ 	cxt->dump_read_cnt = 0;
+ 	cxt->console_read_cnt = 0;
++	cxt->ftrace_read_cnt = 0;
+ 	return 0;
+ }
+ 

@@ -1,0 +1,13 @@
+--- drivers/staging/zram/zram_sysfs.c
++++ drivers/staging/zram/zram_sysfs.c
+@@ -188,8 +188,10 @@
+ 	struct zram *zram = dev_to_zram(dev);
+ 	struct zram_meta *meta = zram->meta;
+ 
++	down_read(&zram->init_lock);
+ 	if (zram->init_done)
+ 		val = zs_get_total_size_bytes(meta->mem_pool);
++	up_read(&zram->init_lock);
+ 
+ 	return sprintf(buf, "%llu\n", val);
+ }

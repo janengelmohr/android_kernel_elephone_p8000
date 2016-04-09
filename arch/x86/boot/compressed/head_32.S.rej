@@ -1,0 +1,16 @@
+--- arch/x86/boot/compressed/head_32.S
++++ arch/x86/boot/compressed/head_32.S
+@@ -50,6 +50,13 @@
+ 	pushl	%eax
+ 	pushl	%esi
+ 	pushl	%ecx
++
++	call	reloc
++reloc:
++	popl	%ecx
++	subl	$reloc, %ecx
++	movl	%ecx, BP_code32_start(%eax)
++
+ 	sub	$0x4, %esp
+ 
+ ENTRY(efi_stub_entry)

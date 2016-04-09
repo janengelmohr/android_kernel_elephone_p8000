@@ -1,0 +1,11 @@
+--- drivers/hid/hid-core.c
++++ drivers/hid/hid-core.c
+@@ -1370,7 +1278,7 @@
+ 		"Multi-Axis Controller"
+ 	};
+ 	const char *type, *bus;
+-	char buf[64] = "";
++	char buf[64];
+ 	unsigned int i;
+ 	int len;
+ 	int ret;

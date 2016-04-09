@@ -1,0 +1,13 @@
+--- drivers/tty/hvc/hvsi_lib.c
++++ drivers/tty/hvc/hvsi_lib.c
+@@ -341,8 +341,8 @@
+ 
+ 	pr_devel("HVSI@%x:   ... waiting handshake\n", pv->termno);
+ 
+-	/* Try for up to 200s */
+-	for (timeout = 0; timeout < 20; timeout++) {
++	/* Try for up to 400ms */
++	for (timeout = 0; timeout < 40; timeout++) {
+ 		if (pv->established)
+ 			goto established;
+ 		if (!hvsi_get_packet(pv))

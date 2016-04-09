@@ -1,0 +1,114 @@
+--- net/ipv4/tcp_output.c
++++ net/ipv4/tcp_output.c
+@@ -1872,15 +1883,34 @@
+ 				break;
+ 		}
+ 
+-		/* TSQ : sk_wmem_alloc accounts skb truesize,
+-		 * including skb overhead. But thats OK.
++		/* TCP Small Queues :
++		 * Control number of packets in qdisc/devices to two packets / or ~1 ms.
++		 * This allows for :
++		 *  - better RTT estimation and ACK scheduling
++		 *  - faster recovery
++		 *  - high rates
++		 * Alas, some drivers / subsystems require a fair amount
++		 * of queued bytes to ensure line rate.
++		 * One example is wifi aggregation (802.11 AMPDU)
+ 		 */
+-		if (atomic_read(&sk->sk_wmem_alloc) >= sysctl_tcp_limit_output_bytes) {
++		limit = max_t(unsigned int, sysctl_tcp_limit_output_bytes,
++			      sk->sk_pacing_rate >> 10);
++
++		if (atomic_read(&sk->sk_wmem_alloc) > limit) {
+ 			set_bit(TSQ_THROTTLED, &tp->tsq_flags);
+-			break;
++			/* It is possible TX completion already happened
++			 * before we set TSQ_THROTTLED, so we must
++			 * test again the condition.
++			 * We abuse smp_mb__after_clear_bit() because
++			 * there is no smp_mb__after_set_bit() yet
++			 */
++			smp_mb__after_clear_bit();
++			if (atomic_read(&sk->sk_wmem_alloc) > limit)
++				break;
+ 		}
++
+ 		limit = mss_now;
+-		if (tso_segs > 1 && !tcp_urg_mode(tp))
++		if (tso_segs > 1 && sk->sk_gso_max_segs && !tcp_urg_mode(tp))
+ 			limit = tcp_mss_split_point(sk, skb, mss_now,
+ 						    min_t(unsigned int,
+ 							  cwnd_quota,
+@@ -2908,42 +2966,44 @@
+ 	space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
+ 		MAX_TCP_OPTION_SPACE;
+ 
+-	syn_data = skb_copy_expand(syn, skb_headroom(syn), space,
+-				   sk->sk_allocation);
+-	if (syn_data == NULL)
+-		goto fallback;
+-
+-	for (i = 0; i < iovlen && syn_data->len < space; ++i) {
+-		struct iovec *iov = &fo->data->msg_iov[i];
+-		unsigned char __user *from = iov->iov_base;
+-		int len = iov->iov_len;
++	space = min_t(size_t, space, fo->size);
+ 
+-		if (syn_data->len + len > space)
+-			len = space - syn_data->len;
+-		else if (i + 1 == iovlen)
+-			/* No more data pending in inet_wait_for_connect() */
+-			fo->data = NULL;
++	/* limit to order-0 allocations */
++	space = min_t(size_t, space, SKB_MAX_HEAD(MAX_TCP_HEADER));
+ 
+-		if (skb_add_data(syn_data, from, len))
+-			goto fallback;
++	syn_data = sk_stream_alloc_skb(sk, space, sk->sk_allocation);
++	if (!syn_data)
++		goto fallback;
++	syn_data->ip_summed = CHECKSUM_PARTIAL;
++	memcpy(syn_data->cb, syn->cb, sizeof(syn->cb));
++	skb_shinfo(syn_data)->gso_segs = 1;
++	if (unlikely(memcpy_fromiovecend(skb_put(syn_data, space),
++					 fo->data->msg_iov, 0, space))) {
++		kfree_skb(syn_data);
++		goto fallback;
+ 	}
+ 
+-	/* Queue a data-only packet after the regular SYN for retransmission */
+-	data = pskb_copy(syn_data, sk->sk_allocation);
+-	if (data == NULL)
+-		goto fallback;
+-	TCP_SKB_CB(data)->seq++;
+-	TCP_SKB_CB(data)->tcp_flags &= ~TCPHDR_SYN;
+-	TCP_SKB_CB(data)->tcp_flags = (TCPHDR_ACK|TCPHDR_PSH);
+-	tcp_connect_queue_skb(sk, data);
+-	fo->copied = data->len;
++	/* No more data pending in inet_wait_for_connect() */
++	if (space == fo->size)
++		fo->data = NULL;
++	fo->copied = space;
++
++	tcp_connect_queue_skb(sk, syn_data);
++
++	err = tcp_transmit_skb(sk, syn_data, 1, sk->sk_allocation);
+ 
+-	if (tcp_transmit_skb(sk, syn_data, 0, sk->sk_allocation) == 0) {
++	/* Now full SYN+DATA was cloned and sent (or not),
++	 * remove the SYN from the original skb (syn_data)
++	 * we keep in write queue in case of a retransmit, as we
++	 * also have the SYN packet (with no data) in the same queue.
++	 */
++	TCP_SKB_CB(syn_data)->seq++;
++	TCP_SKB_CB(syn_data)->tcp_flags = TCPHDR_ACK | TCPHDR_PSH;
++	if (!err) {
+ 		tp->syn_data = (fo->copied > 0);
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPFASTOPENACTIVE);
+ 		goto done;
+ 	}
+-	syn_data = NULL;
+ 
+ fallback:
+ 	/* Send a regular SYN with Fast Open cookie request option */

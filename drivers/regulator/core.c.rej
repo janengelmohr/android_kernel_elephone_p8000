@@ -1,0 +1,33 @@
+--- drivers/regulator/core.c
++++ drivers/regulator/core.c
+@@ -3784,23 +3781,20 @@
+ 
+ 	mutex_lock(&regulator_list_mutex);
+ 	list_for_each_entry(rdev, &regulator_list, list) {
+-		struct regulator_ops *ops = rdev->desc->ops;
+-
+ 		mutex_lock(&rdev->mutex);
+-		if ((rdev->use_count > 0  || rdev->constraints->always_on) &&
+-				ops->enable) {
+-			error = ops->enable(rdev);
+-			if (error)
+-				ret = error;
++		if (rdev->use_count > 0  || rdev->constraints->always_on) {
++			if (!_regulator_is_enabled(rdev)) {
++				error = _regulator_do_enable(rdev);
++				if (error)
++					ret = error;
++			}
+ 		} else {
+ 			if (!has_full_constraints)
+ 				goto unlock;
+-			if (!ops->disable)
+-				goto unlock;
+ 			if (!_regulator_is_enabled(rdev))
+ 				goto unlock;
+ 
+-			error = ops->disable(rdev);
++			error = _regulator_do_disable(rdev);
+ 			if (error)
+ 				ret = error;
+ 		}

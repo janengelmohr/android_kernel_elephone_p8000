@@ -1,0 +1,18 @@
+--- fs/fuse/inode.c
++++ fs/fuse/inode.c
+@@ -1015,7 +1002,6 @@
+ 		goto err_fput;
+ 
+ 	fuse_conn_init(fc);
+-	fc->release = fuse_free_conn;
+ 
+ 	fc->dev = sb->s_dev;
+ 	fc->sb = sb;
+@@ -1030,6 +1016,7 @@
+ 		fc->dont_mask = 1;
+ 	sb->s_flags |= MS_POSIXACL;
+ 
++	fc->release = fuse_free_conn;
+ 	fc->flags = d.flags;
+ 	fc->user_id = d.user_id;
+ 	fc->group_id = d.group_id;

@@ -1,0 +1,11 @@
+--- net/mac80211/mlme.c
++++ net/mac80211/mlme.c
+@@ -3040,7 +3006,7 @@
+ 
+ 	if (ifmgd->rssi_min_thold != ifmgd->rssi_max_thold &&
+ 	    ifmgd->count_beacon_signal >= IEEE80211_SIGNAL_AVE_MIN_COUNT) {
+-		int sig = ifmgd->ave_beacon_signal / 16;
++		int sig = ifmgd->ave_beacon_signal;
+ 		int last_sig = ifmgd->last_ave_beacon_signal;
+ 
+ 		/*

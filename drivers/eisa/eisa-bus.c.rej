@@ -1,0 +1,68 @@
+--- drivers/eisa/eisa-bus.c
++++ drivers/eisa/eisa-bus.c
+@@ -275,11 +275,13 @@
+ 		}
+ 		
+ 		if (slot) {
++			edev->res[i].name  = NULL;
+ 			edev->res[i].start = SLOT_ADDRESS(root, slot)
+ 					     + (i * 0x400);
+ 			edev->res[i].end   = edev->res[i].start + 0xff;
+ 			edev->res[i].flags = IORESOURCE_IO;
+ 		} else {
++			edev->res[i].name  = NULL;
+ 			edev->res[i].start = SLOT_ADDRESS(root, slot)
+ 					     + EISA_VENDOR_ID_OFFSET;
+ 			edev->res[i].end   = edev->res[i].start + 3;
+@@ -326,19 +328,20 @@
+ 		return -ENOMEM;
+ 	}
+ 		
+-	if (eisa_init_device(root, edev, 0)) {
++	if (eisa_request_resources(root, edev, 0)) {
++		dev_warn(root->dev,
++		         "EISA: Cannot allocate resource for mainboard\n");
+ 		kfree(edev);
+ 		if (!root->force_probe)
+-			return -ENODEV;
++			return -EBUSY;
+ 		goto force_probe;
+ 	}
+ 
+-	if (eisa_request_resources(root, edev, 0)) {
+-		dev_warn(root->dev,
+-		         "EISA: Cannot allocate resource for mainboard\n");
++	if (eisa_init_device(root, edev, 0)) {
++		eisa_release_resources(edev);
+ 		kfree(edev);
+ 		if (!root->force_probe)
+-			return -EBUSY;
++			return -ENODEV;
+ 		goto force_probe;
+ 	}
+ 
+@@ -361,11 +364,6 @@
+ 			continue;
+ 		}
+ 
+-		if (eisa_init_device(root, edev, i)) {
+-			kfree(edev);
+-			continue;
+-		}
+-
+ 		if (eisa_request_resources(root, edev, i)) {
+ 			dev_warn(root->dev,
+ 			         "Cannot allocate resource for EISA slot %d\n",
+@@ -374,6 +372,12 @@
+ 			continue;
+ 		}
+ 
++		if (eisa_init_device(root, edev, i)) {
++			eisa_release_resources(edev);
++			kfree(edev);
++			continue;
++		}
++
+ 		if (edev->state == (EISA_CONFIG_ENABLED | EISA_CONFIG_FORCED))
+ 			enabled_str = " (forced enabled)";
+ 		else if (edev->state == EISA_CONFIG_FORCED)

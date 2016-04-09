@@ -1,0 +1,20 @@
+--- net/bluetooth/rfcomm/sock.c
++++ net/bluetooth/rfcomm/sock.c
+@@ -608,7 +608,6 @@
+ 
+ 	if (test_and_clear_bit(RFCOMM_DEFER_SETUP, &d->flags)) {
+ 		rfcomm_dlc_accept(d);
+-		msg->msg_namelen = 0;
+ 		return 0;
+ 	}
+ 
+@@ -888,7 +887,8 @@
+ 		sk->sk_shutdown = SHUTDOWN_MASK;
+ 		__rfcomm_sock_close(sk);
+ 
+-		if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime)
++		if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime &&
++		    !(current->flags & PF_EXITING))
+ 			err = bt_sock_wait_state(sk, BT_CLOSED, sk->sk_lingertime);
+ 	}
+ 	release_sock(sk);

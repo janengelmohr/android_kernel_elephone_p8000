@@ -1,0 +1,11 @@
+--- drivers/net/wireless/rt2x00/rt2x00lib.h
++++ drivers/net/wireless/rt2x00/rt2x00lib.h
+@@ -146,7 +146,7 @@
+  * @local: frame is not from mac80211
+  */
+ int rt2x00queue_write_tx_frame(struct data_queue *queue, struct sk_buff *skb,
+-			       bool local);
++			       struct ieee80211_sta *sta, bool local);
+ 
+ /**
+  * rt2x00queue_update_beacon - Send new beacon from mac80211

@@ -1,0 +1,24 @@
+--- drivers/mtd/ubi/wl.c
++++ drivers/mtd/ubi/wl.c
+@@ -999,7 +999,7 @@
+ 				int cancel)
+ {
+ 	int err, scrubbing = 0, torture = 0, protect = 0, erroneous = 0;
+-	int vol_id = -1, uninitialized_var(lnum);
++	int vol_id = -1, lnum = -1;
+ #ifdef CONFIG_MTD_UBI_FASTMAP
+ 	int anchor = wrk->anchor;
+ #endif
+@@ -1259,10 +1259,9 @@
+ 
+ 	ubi_free_vid_hdr(ubi, vid_hdr);
+ 	err = do_sync_erase(ubi, e2, vol_id, lnum, torture);
+-	if (err) {
+-		kmem_cache_free(ubi_wl_entry_slab, e2);
++	if (err)
+ 		goto out_ro;
+-	}
++
+ 	mutex_unlock(&ubi->move_mutex);
+ 	return 0;
+ 

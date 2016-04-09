@@ -1,0 +1,10 @@
+--- drivers/scsi/megaraid.c
++++ drivers/scsi/megaraid.c
+@@ -4244,6 +4244,7 @@
+ 	.eh_device_reset_handler	= megaraid_reset,
+ 	.eh_bus_reset_handler		= megaraid_reset,
+ 	.eh_host_reset_handler		= megaraid_reset,
++	.no_write_same			= 1,
+ };
+ 
+ static int

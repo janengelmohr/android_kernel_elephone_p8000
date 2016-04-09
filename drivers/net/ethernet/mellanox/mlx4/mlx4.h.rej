@@ -1,0 +1,10 @@
+--- drivers/net/ethernet/mellanox/mlx4/mlx4.h
++++ drivers/net/ethernet/mellanox/mlx4/mlx4.h
+@@ -743,6 +743,7 @@
+ 	spinlock_t		ctx_lock;
+ 
+ 	int			pci_dev_data;
++	int                     removed;
+ 
+ 	struct list_head        pgdir_list;
+ 	struct mutex            pgdir_mutex;

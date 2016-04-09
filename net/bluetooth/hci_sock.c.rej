@@ -1,0 +1,11 @@
+--- net/bluetooth/hci_sock.c
++++ net/bluetooth/hci_sock.c
+@@ -752,8 +752,6 @@
+ 	if (!skb)
+ 		return err;
+ 
+-	msg->msg_namelen = 0;
+-
+ 	copied = skb->len;
+ 	if (len < copied) {
+ 		msg->msg_flags |= MSG_TRUNC;

@@ -1,0 +1,11 @@
+--- fs/nfs/nfs4filelayout.c
++++ fs/nfs/nfs4filelayout.c
+@@ -1300,7 +1300,7 @@
+ 	struct nfs4_filelayout *flo;
+ 
+ 	flo = kzalloc(sizeof(*flo), gfp_flags);
+-	return &flo->generic_hdr;
++	return flo != NULL ? &flo->generic_hdr : NULL;
+ }
+ 
+ static void
