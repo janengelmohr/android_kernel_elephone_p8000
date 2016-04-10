@@ -2467,15 +2467,9 @@ CONFIG_STAGING=y
 # CONFIG_RTS5139 is not set
 # CONFIG_TRANZPORT is not set
 # CONFIG_LINE6_USB is not set
-<<<<<<< HEAD
 CONFIG_ZSMALLOC=y
 CONFIG_ZRAM=y
 CONFIG_ZRAM_DEBUG=n
-=======
-# CONFIG_ZSMALLOC is not set
-CONFIG_ZRAM=n
-# CONFIG_ZRAM_DEBUG is not set
->>>>>>> gueste/master
 # CONFIG_ZSM is not set
 # CONFIG_BCM_WIMAX is not set
 # CONFIG_FT1000 is not set

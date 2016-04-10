@@ -47,9 +47,9 @@
 /* battery meter parameter */
 #define CHANGE_TRACKING_POINT
 #ifdef CONFIG_MTK_HAFG_20
-#define CUST_TRACKING_POINT  0
+#define CUST_TRACKING_POINT  20
 #else
-#define CUST_TRACKING_POINT  1
+#define CUST_TRACKING_POINT  20 // fix for Elephone P8000 20% battery drop 
 #endif
 #define CUST_R_SENSE         6// 6 mO for k05ts_a so we have faster charging
 #define CUST_HW_CC 		    0
