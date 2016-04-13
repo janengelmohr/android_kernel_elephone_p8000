@@ -7,7 +7,7 @@ How to compile a standalone kernel:
 
 git clone git@github.com:visi0nary/android_kernel_elephone_p8000.git
 
-cd android_kernel_elephone_p800
+cd android_kernel_elephone_p8000
 
 export ARCH=arm64
 
