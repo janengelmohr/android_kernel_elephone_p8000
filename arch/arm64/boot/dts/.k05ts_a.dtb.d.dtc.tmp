@@ -1,1 +1,0 @@
-arch/arm64/boot/dts/k05ts_a.dtb: arch/arm64/boot/dts/.k05ts_a.dtb.dts.tmp arch/arm64/boot/dts/mt6753.dtsi /home/visi0nary/android_kernel_elephone_p8000/drivers/misc/mediatek/mach/mt6735/k05ts_a/dct/dct/cust_eint.dtsi
