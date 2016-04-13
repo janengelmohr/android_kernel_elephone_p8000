@@ -13,7 +13,7 @@ export ARCH=arm64
 
 export CROSS_COMPILE=/path/to/your/toolchain/aarch64/aarch64-linux-android-x.x/bin/aarch64-linux-android-
 
-make p8000_defconfig
+make p8000_cyanogenmod12_1_defconfig
 
 make -jX (where X is the # of your CPU threads +1)
 
