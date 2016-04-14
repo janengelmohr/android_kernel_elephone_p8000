@@ -51,7 +51,7 @@
 #else
 #define CUST_TRACKING_POINT  1
 #endif
-#define CUST_R_SENSE         6// 6 mO for k05ts_a so we have faster charging
+#define CUST_R_SENSE         10//10mO for k05ts_a so we have faster charging
 #define CUST_HW_CC 		    0
 #define AGING_TUNING_VALUE   103
 #define CUST_R_FG_OFFSET    0
