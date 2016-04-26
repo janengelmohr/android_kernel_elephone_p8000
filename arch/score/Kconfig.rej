@@ -1,9 +1,0 @@
---- arch/score/Kconfig
-+++ arch/score/Kconfig
-@@ -109,3 +109,6 @@
- source "crypto/Kconfig"
- 
- source "lib/Kconfig"
-+
-+config NO_IOMEM
-+       def_bool y
