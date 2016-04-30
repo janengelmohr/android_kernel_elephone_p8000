@@ -46,7 +46,11 @@
 
 /* battery meter parameter */
 #define CHANGE_TRACKING_POINT
-#define CUST_TRACKING_POINT  20
+#ifdef CONFIG_MTK_HAFG_20
+#define CUST_TRACKING_POINT  0
+#else
+#define CUST_TRACKING_POINT  1
+#endif
 #define CUST_R_SENSE         10 //10mO for k05ts_a so we have faster charging
 #define CUST_HW_CC 		    0
 #define AGING_TUNING_VALUE   103
