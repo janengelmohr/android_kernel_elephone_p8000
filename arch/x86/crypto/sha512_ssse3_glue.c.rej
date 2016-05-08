@@ -1,8 +1,0 @@
---- arch/x86/crypto/sha512_ssse3_glue.c
-+++ arch/x86/crypto/sha512_ssse3_glue.c
-@@ -279,4 +279,4 @@
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("SHA512 Secure Hash Algorithm, Supplemental SSE3 accelerated");
- 
--MODULE_ALIAS_CRYPTO("sha512");
-+MODULE_ALIAS("sha512");
