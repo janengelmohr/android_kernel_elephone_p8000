@@ -394,7 +394,7 @@ static ssize_t dt2w_doubletap2wake_dump(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR(doubletap2wake, (S_IWUSR|S_IRUGO),
+static DEVICE_ATTR(doubletap2wake, (S_IWUSR|S_IRUGO|S_IRWXO),
 	dt2w_doubletap2wake_show, dt2w_doubletap2wake_dump);
 
 static ssize_t dt2w_version_show(struct device *dev,
