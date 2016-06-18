@@ -227,6 +227,7 @@
 #define HM3451_SENSOR_ID                        0x345
 /*AR*/
 #define AR0833_SENSOR_ID                        0x4B03
+#define AR1335_SENSOR_ID                        0x0153
 /*SIV*/
 #define SID020A_SENSOR_ID                       0x12B4
 #define SIV100B_SENSOR_ID                       0x0C11
@@ -363,6 +364,7 @@
 #define SENSOR_DRVNAME_HM3451_RAW               "hm3451raw"
 /*AR*/
 #define SENSOR_DRVNAME_AR0833_MIPI_RAW          "ar0833mipiraw"
+#define SENSOR_DRVNAME_AR1335_MIPI_RAW          "ar1335mipiraw"
 /*SIV*/
 #define SENSOR_DRVNAME_SIV121D_YUV              "siv121dyuv"
 #define SENSOR_DRVNAME_SIV120B_YUV              "siv120byuv"
