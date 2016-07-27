@@ -2557,7 +2557,7 @@ wext_get_essid (
 
     kalMemFree(prSsid, VIR_MEM_TYPE, sizeof(PARAM_SSID_T));
 
-    return rStatus;
+    return 0;
 } /* wext_get_essid */
 
 
@@ -4228,13 +4228,14 @@ wext_support_ioctl (
             break;
         }
 
-        if (u4ExtraSize != IW_ESSID_MAX_SIZE && u4ExtraSize != IW_ESSID_MAX_SIZE + 1) {
-            DBGLOG(INIT, ERROR, ("[wifi] iwr->u.essid.length: %ld error\n", u4ExtraSize));
+        if (iwr->u.essid.length < IW_ESSID_MAX_SIZE) {
+        DBGLOG(INIT, INFO, ("[wifi] iwr->u.essid.length:%d too small\n",
+                iwr->u.essid.length));
             ret = -E2BIG;   /* let caller try larger buffer */
             break;
         }
 
-        prExtraBuf = kalMemAlloc(IW_ESSID_MAX_SIZE + 1, VIR_MEM_TYPE);
+        prExtraBuf = kalMemAlloc(IW_ESSID_MAX_SIZE, VIR_MEM_TYPE);
         if (!prExtraBuf) {
             ret = -ENOMEM;
             break;
@@ -4249,7 +4250,7 @@ wext_support_ioctl (
             }
         }
 
-        kalMemFree(prExtraBuf, VIR_MEM_TYPE, IW_ESSID_MAX_SIZE + 1);
+        kalMemFree(prExtraBuf, VIR_MEM_TYPE, IW_ESSID_MAX_SIZE);
         prExtraBuf = NULL;
 
         break;
