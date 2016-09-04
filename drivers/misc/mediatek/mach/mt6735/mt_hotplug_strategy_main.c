@@ -510,7 +510,7 @@ static int __cpuinit hps_resume(struct device *dev)
     mutex_unlock(&hps_ctxt.lock);
 
     //In order to fast screen on, power on extra little CPU to serve system resume.
-    little_cpu_num_resume = 4;
+    little_cpu_num_resume = 1;
     for(cpu = hps_ctxt.little_cpu_id_min; cpu <= little_cpu_num_resume; cpu++)
     {
         if (!cpu_online(cpu))
