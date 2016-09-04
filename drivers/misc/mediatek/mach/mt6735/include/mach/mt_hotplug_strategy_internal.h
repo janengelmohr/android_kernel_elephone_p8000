@@ -54,10 +54,10 @@ extern "C" {
 #define DEF_CPU_DOWN_TIMES                  (8)
 #define DEF_TLP_TIMES                       (1)
 
-#define EN_CPU_INPUT_BOOST                  (1)
+#define EN_CPU_INPUT_BOOST                  (0)
 #define DEF_CPU_INPUT_BOOST_CPU_NUM         (2)
 
-#define EN_CPU_RUSH_BOOST                   (1)
+#define EN_CPU_RUSH_BOOST                   (0)
 #define DEF_CPU_RUSH_BOOST_THRESHOLD        (98)
 #define DEF_CPU_RUSH_BOOST_TIMES            (1)
 
