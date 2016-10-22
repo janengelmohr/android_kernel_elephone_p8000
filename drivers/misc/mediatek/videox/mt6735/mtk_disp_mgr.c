@@ -3008,7 +3008,7 @@ static ssize_t mtk_disp_ld_set_rgb(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR(rgb, S_IRUGO | S_IWUSR | S_IWGRP, mtk_disp_ld_get_rgb, mtk_disp_ld_set_rgb);
+static DEVICE_ATTR(rgb, S_IRUGO | S_IWUSR | S_IWGRP | S_IROTH | S_IWOTH, mtk_disp_ld_get_rgb, mtk_disp_ld_set_rgb);
 
 static void mtk_disp_rgb_work(struct work_struct *work) {
         struct mtk_rgb_work_queue *rgb_wq = container_of(work, struct mtk_rgb_work_queue, work);
