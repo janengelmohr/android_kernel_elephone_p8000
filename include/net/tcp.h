@@ -1397,6 +1397,8 @@ static inline void tcp_check_send_head(struct sock *sk, struct sk_buff *skb_unli
 {
 	if (sk->sk_send_head == skb_unlinked)
 		sk->sk_send_head = NULL;
+	if (tcp_sk(sk)->highest_sack == skb_unlinked)
+		tcp_sk(sk)->highest_sack = NULL;
 }
 
 static inline void tcp_init_send_head(struct sock *sk)
@@ -1540,15 +1542,6 @@ struct tcp_iter_state {
 	loff_t			last_pos;
 };
 
-/* MTK_NET_CHANGES */
-/*
- * reset tcp connection by uid
- */
-struct uid_err {
-	int appuid;
-	int errNum;
-};
-
 extern int tcp_proc_register(struct net *net, struct tcp_seq_afinfo *afinfo);
 extern void tcp_proc_unregister(struct net *net, struct tcp_seq_afinfo *afinfo);
 
@@ -1568,9 +1561,6 @@ extern int tcp_gro_complete(struct sk_buff *skb);
 extern int tcp4_gro_complete(struct sk_buff *skb);
 
 extern int tcp_nuke_addr(struct net *net, struct sockaddr *addr);
-/* MTK_NET_CHANGES */
-extern void tcp_v4_reset_connections_by_uid(struct uid_err uid_e);
-extern void tcp_v4_handle_retrans_time_by_uid(struct uid_err uid_e);
 
 #ifdef CONFIG_PROC_FS
 extern int tcp4_proc_init(void);
