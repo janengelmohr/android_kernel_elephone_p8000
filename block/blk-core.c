@@ -144,7 +144,6 @@ void blk_rq_init(struct request_queue *q, struct request *rq)
 	rq->cmd = rq->__cmd;
 	rq->cmd_len = BLK_MAX_CDB;
 	rq->tag = -1;
-	rq->ref_count = 1;
 	rq->start_time = jiffies;
 	set_start_time_ns(rq);
 	rq->part = NULL;
@@ -173,9 +172,9 @@ void blk_dump_rq_flags(struct request *rq, char *msg)
 {
 	int bit;
 
-	printk(KERN_INFO "%s: dev %s: type=%x, flags=%x\n", msg,
+	printk(KERN_INFO "%s: dev %s: type=%x, flags=%llx\n", msg,
 		rq->rq_disk ? rq->rq_disk->disk_name : "?", rq->cmd_type,
-		rq->cmd_flags);
+		(unsigned long long) rq->cmd_flags);
 
 	printk(KERN_INFO "  sector %llu, nr/cnr %u/%u\n",
 	       (unsigned long long)blk_rq_pos(rq),
@@ -1337,8 +1336,6 @@ static inline void blk_pm_put_request(struct request *rq) {}
 void __blk_put_request(struct request_queue *q, struct request *req)
 {
 	if (unlikely(!q))
-		return;
-	if (unlikely(--req->ref_count))
 		return;
 
 	blk_pm_put_request(req);

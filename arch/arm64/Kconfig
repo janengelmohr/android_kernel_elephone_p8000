@@ -27,6 +27,7 @@ config ARM64
 	select HAVE_ARCH_KGDB
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_C_RECORDMCOUNT
+	select HAVE_CC_STACKPROTECTOR
 	select HAVE_DEBUG_BUGVERBOSE
 	select HAVE_DEBUG_KMEMLEAK
 	select HAVE_DMA_API_DEBUG
@@ -334,7 +335,6 @@ config ARM64_64K_PAGES
 
 config SMP
 	bool "Symmetric Multi-Processing"
-	select USE_GENERIC_SMP_HELPERS
 	help
 	  This enables support for systems with more than one CPU.  If
 	  you say N here, the kernel will run on single and

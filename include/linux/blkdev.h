@@ -182,7 +182,7 @@ struct request {
 
 	struct request_queue *q;
 
-	unsigned int cmd_flags;
+	u64 cmd_flags;
 	enum rq_cmd_type_bits cmd_type;
 	unsigned long atomic_flags;
 
@@ -242,8 +242,6 @@ struct request {
 #endif
 
 	unsigned short ioprio;
-
-	int ref_count;
 
 	void *special;		/* opaque pointer available for LLD use */
 	char *buffer;		/* kaddr of the current segment if available */
@@ -656,7 +654,7 @@ static inline void queue_flag_clear(unsigned int flag, struct request_queue *q)
 
 #define list_entry_rq(ptr)	list_entry((ptr), struct request, queuelist)
 
-#define rq_data_dir(rq)		((rq)->cmd_flags & 1)
+#define rq_data_dir(rq)		(((rq)->cmd_flags & 1) != 0)
 
 static inline unsigned int blk_queue_cluster(struct request_queue *q)
 {
